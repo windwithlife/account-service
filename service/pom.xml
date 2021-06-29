@@ -11,9 +11,9 @@
         <version>1.0</version>
     </parent>
  
-    <artifactId>simple-mqtt</artifactId>
+    <artifactId>simple-account</artifactId>
     <version>1.0.0</version>
-    <name>Simple-Mqtt</name>
+    <name>Simple-Account</name>
     <url>https://www.zhangyongqiao.com</url>
  
     <dependencies>
