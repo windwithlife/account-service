@@ -61,7 +61,6 @@ public class AccountService {
             return this.convertToDto(model);
         }
     }
-
     public String login(AccountDto account){
         AccountModel model = dao.findOneByName(account.getName());
         String token = "";
