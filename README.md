@@ -1,1 +1,1 @@
-# SimpleAccount
+# smart-iot

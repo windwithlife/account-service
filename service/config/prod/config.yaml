@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: common-config
+data:
+  SPRING_PROFILES_ACTIVE: prod
+  SERVER_PORT: "80"
+  ACCOUNT_SERVICE_ENDPOINT: http://account-service
+  SENTRY_DSN: https://21cb9790be1545f195743a18c77f37d8@o461905.ingest.sentry.io/5464621
+  SIGNING_SECRET: your_signing_secret
+
