@@ -50,6 +50,7 @@ public class AccountService {
         String token = Sessions.createTokenWithUserInfo("", "guest", openId, "");
         return token;
     }
+    
     public AccountDto signup(AccountDto account){
         AccountModel model = dao.findOneByName(account.getName());
         if (null != model){
