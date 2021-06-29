@@ -2,8 +2,11 @@ package com.simple.bz.service;
 
 import com.simple.bz.dao.AccountRepository;
 import com.simple.bz.dao.ContextQuery;
+import com.simple.bz.dao.UserRepository;
 import com.simple.bz.dto.AccountDto;
+import com.simple.bz.dto.UserDto;
 import com.simple.bz.model.AccountModel;
+import com.simple.bz.model.UserModel;
 import com.simple.common.auth.Sessions;
 import com.simple.common.error.ServiceException;
 import com.simple.common.wechat.WechatHelper;
@@ -20,6 +23,7 @@ public class AccountService {
     private final ModelMapper modelMapper;
     
     private final AccountRepository dao;
+    private final UserRepository userDao;
     private final ContextQuery contextQuery;
 
     public AccountModel convertToModel(AccountDto dto){
@@ -50,7 +54,7 @@ public class AccountService {
         String token = Sessions.createTokenWithUserInfo("", "guest", openId, "");
         return token;
     }
-    
+
     public AccountDto signup(AccountDto account){
         AccountModel model = dao.findOneByName(account.getName());
         if (null != model){
@@ -77,6 +81,21 @@ public class AccountService {
         }
     }
 
+    public AccountDto updateAccount(AccountDto dto){
+        AccountModel model =  dao.findById(dto.getId()).get();
+        this.modelMapper.map(dto, model);
+        this.dao.save(model);
+        return dto;
+
+    }
+
+    public UserDto updateUserInfo(UserDto dto){
+        UserModel model =  userDao.findById(dto.getId()).get();
+        this.modelMapper.map(dto, model);
+        this.userDao.save(model);
+        return dto;
+
+    }
     public List<AccountDto> findAll(){
 
         List<AccountModel> list =   dao.findAll();
@@ -106,7 +125,7 @@ public class AccountService {
         String id = item.getId();
         AccountModel model = dao.findById(id).get();
         this.modelMapper.map(item, model);
-        System.out.println("Iot device model info ");
+
         System.out.println(model.toString());
         this.dao.save(model);
         return item;

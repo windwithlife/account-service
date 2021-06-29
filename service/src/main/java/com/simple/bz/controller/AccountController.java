@@ -2,6 +2,7 @@ package com.simple.bz.controller;
 
 import com.simple.bz.dto.AccountDto;
 
+import com.simple.bz.dto.UserDto;
 import com.simple.bz.service.AccountService;
 
 import com.simple.common.api.SimpleRequest;
@@ -102,8 +103,26 @@ public class AccountController extends BaseController {
 
     }
 
+    @ApiOperation(value="修改基本用户信息")
+    @PostMapping(path = "/updateAccount")
+    public SimpleResponse<AccountDto> updateAccount (@RequestBody SimpleRequest<AccountDto> params){
+        AccountDto account = params.getParams();
+        service.updateAccount(account);
+        SimpleResponse<AccountDto> ret= new SimpleResponse<AccountDto>();
+        return  ret.success(account);
+
+    }
 
 
+    @ApiOperation(value="修改基本用户扩展信息")
+    @PostMapping(path = "/updateUserInfo")
+    public SimpleResponse<UserDto> updateUserInfo (@RequestBody SimpleRequest<UserDto> params){
+        UserDto userInfo = params.getParams();
+        service.updateUserInfo(userInfo);
+        SimpleResponse<UserDto> ret= new SimpleResponse<UserDto>();
+        return  ret.success(userInfo);
+
+    }
 
 
 }
