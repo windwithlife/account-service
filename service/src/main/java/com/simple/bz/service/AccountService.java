@@ -107,12 +107,17 @@ public class AccountService {
         AccountModel model =  dao.findById(id).get();
         return this.convertToDto(model);
     }
-
+    public UserDto getUserInfoByUserId(String id){
+        UserModel model =  userDao.findByUserId(id);
+        return this.modelMapper.map(model, UserDto.class);
+    }
 
     public List<AccountDto> queryAll(){
         List<AccountDto> list = contextQuery.findList("select * from tbl_account", AccountDto.class);
         return  list;
     }
+
+
 
     public AccountDto save(AccountDto item){
         AccountModel model = this.convertToModel(item);

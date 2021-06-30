@@ -124,5 +124,22 @@ public class AccountController extends BaseController {
 
     }
 
+    @ApiOperation(value="获取当前登录用户信息")
+    @PostMapping(path = "/getCurrentUserInfo")
+    public SimpleResponse<UserDto> updateUserInfo (@RequestBody SimpleRequest<UserDto> params,
+                                                   HttpServletRequest request,
+                                                   HttpServletResponse response){
+        String token =  Sessions.getAuthToken(request);
+        if (StringUtils.isNotBlank(token)){
+            String userId = Sessions.getSessionUserInfo(token).getUserId();
+            UserDto userInfo = service.getUserInfoByUserId(userId);
+            SimpleResponse<UserDto> ret= new SimpleResponse<UserDto>();
+            return  ret.success(userInfo);
+        }else{
+            SimpleResponse<UserDto> ret= new SimpleResponse<UserDto>();
+            return ret.failure("当前未登录");
+        }
+
+    }
 
 }
