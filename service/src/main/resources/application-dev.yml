@@ -17,7 +17,7 @@ spring:
 
 
 server:
-  port: 8888
+  port: 5388
   servlet:
     context-path: /simple-account
 simple:
@@ -34,8 +34,8 @@ qiniu:
 wechat :
   xcx :
     meetinglive :
-      appId: wx23687b634498f224
-      appSecret: bf1a4693c9bae08e0da1b2025864582a
+      appId: wx57ca96b80dc5cfa8
+      appSecret: cc63834a73a0045300d2d6aa3f9a4402
       jscode2session: https://api.weixin.qq.com/sns/jscode2session?appid=APPID&secret=SECRET&js_code=JSCODE&grant_type=authorization_code
       accessToken: https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=APPSECRET
       getwxacodeunlimit: https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=ACCESS_TOKEN

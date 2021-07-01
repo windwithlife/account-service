@@ -86,7 +86,7 @@ public class AccountController extends BaseController {
         return  ret.success(account);
 
     }
-    @ApiOperation(value="普通用户登录")
+    @ApiOperation(value="普通用户登出")
     @PostMapping(path = "/logout")
     public SimpleResponse<AccountDto>  logout (@RequestBody SimpleRequest<AccountDto> params,
                                                HttpServletRequest request,

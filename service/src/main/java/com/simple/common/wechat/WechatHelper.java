@@ -16,6 +16,9 @@ import java.io.UnsupportedEncodingException;
 public class WechatHelper {
     private static final Logger logger                             = LoggerFactory.getLogger(WechatHelper.class);
     public static String getWechatOpenId(String code){
+        System.out.println(ApplicationConfig.wecaht_meetinglive_jscode2session);
+        System.out.println(ApplicationConfig.wecaht_meetinglive_appid);
+        System.out.println(ApplicationConfig.wecaht_meetinglive_appsecret);
         //step1:获取并替换url地址
         String requestUrl = ApplicationConfig.wecaht_meetinglive_jscode2session
                 .replace("APPID", ApplicationConfig.wecaht_meetinglive_appid)
