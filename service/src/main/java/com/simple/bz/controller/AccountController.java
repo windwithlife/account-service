@@ -48,6 +48,7 @@ public class AccountController extends BaseController {
         SimpleResponse<String> result = new SimpleResponse<String>();
         return  result.success(token);
 
+
     }
     @ApiOperation(value="用记注册")
     @PostMapping(path = "/signup")
