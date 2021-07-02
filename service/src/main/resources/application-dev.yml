@@ -17,7 +17,7 @@ spring:
 
 
 server:
-  port: 5388
+  port: 5389
   servlet:
     context-path: /simple-account
 simple:

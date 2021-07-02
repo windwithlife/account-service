@@ -51,7 +51,7 @@ public class AccountService {
 
     public String wechatLogin(String code ){
         String openId = WechatHelper.getWechatOpenId(code);
-        String token = Sessions.createTokenWithUserInfo("", "guest", openId, "");
+        String token = Sessions.createTokenWithUserInfo(openId, "guest", openId, "");
         return token;
     }
 
