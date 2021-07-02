@@ -27,6 +27,7 @@ public class AccountModel {
     private String nickName;
     private String password;
     private String passwordHash;
+    private String token;
     private String email;
     private boolean confirmedAndActive;
     private String phoneNumber;
