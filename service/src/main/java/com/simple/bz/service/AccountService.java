@@ -51,7 +51,14 @@ public class AccountService {
 
     public String wechatLogin(String code ){
         String openId = WechatHelper.getWechatOpenId(code);
+        System.out.println("OpenId---->" + openId);
         String token = Sessions.createTokenWithUserInfo(openId, "guest", openId, "");
+        AccountModel oldModel = dao.findById(openId).orElse(null);
+        if(null == oldModel){
+            AccountModel model = AccountModel.builder().id(openId).build();
+            AccountModel newModel =  dao.save(model);
+            System.out.println("new account ID ------>" + newModel.getId());
+        }
         return token;
     }
 
@@ -109,7 +116,13 @@ public class AccountService {
     }
     public UserDto getUserInfoByUserId(String id){
         UserModel model =  userDao.findByUserId(id);
-        return this.modelMapper.map(model, UserDto.class);
+        if (null != model){
+            return this.modelMapper.map(model, UserDto.class);
+        }else{
+            return  null;
+        }
+
+
     }
 
     public List<AccountDto> queryAll(){
