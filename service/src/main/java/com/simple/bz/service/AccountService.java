@@ -6,6 +6,7 @@ import com.simple.bz.dao.UserRepository;
 import com.simple.bz.dto.AccountDto;
 import com.simple.bz.dto.UserDto;
 import com.simple.bz.model.AccountModel;
+import com.simple.bz.model.AccountType;
 import com.simple.bz.model.UserModel;
 import com.simple.common.auth.Sessions;
 import com.simple.common.error.ServiceException;
@@ -52,14 +53,22 @@ public class AccountService {
     public String wechatLogin(String code ){
         String openId = WechatHelper.getWechatOpenId(code);
         System.out.println("OpenId---->" + openId);
-        String token = Sessions.createTokenWithUserInfo(openId, "guest", openId, "");
-        AccountModel oldModel = dao.findById(openId).orElse(null);
+
+        AccountModel oldModel = dao.findOneByOpenId(openId);
         if(null == oldModel){
-            AccountModel model = AccountModel.builder().id(openId).build();
+            AccountModel model = AccountModel.builder().openId(openId).type(AccountType.WECHAT_MINI_PROGRAM).build();
             AccountModel newModel =  dao.save(model);
-            System.out.println("new account ID ------>" + newModel.getId());
+            UserModel userModel = UserModel.builder().userId(newModel.getId()).loginName(openId).build();
+            UserModel newUserModel = userDao.save(userModel);
+            System.out.println("new account--->" + newModel.toString() +"UserInfo--->" + newUserModel.toString());
+            String token = Sessions.createTokenWithUserInfo(newModel.getId(), "guest", openId, "");
+            return token;
+        }else{
+            String token = Sessions.createTokenWithUserInfo(oldModel.getId(), "guest", openId, "");
+            return token;
         }
-        return token;
+
+
     }
 
     public AccountDto signup(AccountDto account){

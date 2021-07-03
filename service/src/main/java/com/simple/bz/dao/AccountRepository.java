@@ -5,4 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AccountRepository extends JpaRepository<AccountModel, String>{
     public AccountModel findOneByName(String name);
+    public AccountModel findOneByOpenId(String openId);
 }

@@ -10,6 +10,7 @@ com/simple/common/httpClient/util/HttpMethodEnum.class
 com/simple/common/props/ApplicationConfig.class
 com/simple/common/httpClient/HttpClientHelp$HttpClientHelpHolder.class
 com/simple/common/props/AppProps.class
+com/simple/bz/model/AccountType.class
 com/simple/common/httpClient/HttpClientHelp.class
 com/simple/common/httpClient/IHttpClientService.class
 com/simple/bz/model/AccountModel.class
