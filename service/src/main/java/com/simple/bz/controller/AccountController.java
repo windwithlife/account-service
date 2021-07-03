@@ -122,7 +122,6 @@ public class AccountController extends BaseController {
         service.updateUserInfo(userInfo);
         SimpleResponse<UserDto> ret= new SimpleResponse<UserDto>();
         return  ret.success(userInfo);
-
     }
 
     @ApiOperation(value="获取当前登录用户信息")
