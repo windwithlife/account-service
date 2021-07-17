@@ -10,6 +10,8 @@ import com.simple.bz.service.AccountService;
 import com.simple.common.api.SimpleRequest;
 import com.simple.common.api.SimpleResponse;
 import com.simple.common.auth.AuthModel;
+import com.simple.common.auth.LoginUser;
+import com.simple.common.auth.SessionUser;
 import com.simple.common.auth.Sessions;
 import com.simple.common.controller.BaseController;
 import com.simple.common.error.ServiceException;
@@ -53,7 +55,7 @@ public class AccountController extends BaseController {
 
     }
 
-    @ApiOperation(value="微信登录及验证")
+    @ApiOperation(value="微信验证是否登录")
     @PostMapping(path = "/assertWechatLogin")
     public SimpleResponse<LoginResponse>  assertWechatLogin(HttpServletRequest request){
         String token = Sessions.getAuthToken(request);
@@ -76,6 +78,14 @@ public class AccountController extends BaseController {
 
     }
 
+    @ApiOperation(value="微信验证是否登录2--测试用服务端用户注释拦截")
+    @PostMapping(path = "/assertWechatLoginStatus")
+    public SimpleResponse<LoginResponse>  assertWechatLoginStatus(@LoginUser SessionUser user){
+
+        LoginResponse response = LoginResponse.builder().isLogin(user.isLoginUser()).build();
+        SimpleResponse<LoginResponse> result = new SimpleResponse<LoginResponse>();
+        return  result.success(response);
+    }
     @ApiOperation(value="用记注册")
     @PostMapping(path = "/signup")
     public SimpleResponse<AccountDto>  signup (@RequestBody SimpleRequest<AccountDto> request, HttpServletResponse response){
