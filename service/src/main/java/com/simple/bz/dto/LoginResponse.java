@@ -14,4 +14,5 @@ public class LoginResponse {
     private String name;
     private String token;
     private String openId;
+    private boolean isLogin;
 }
