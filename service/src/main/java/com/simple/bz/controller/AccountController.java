@@ -2,7 +2,9 @@ package com.simple.bz.controller;
 
 import com.simple.bz.dto.AccountDto;
 
+import com.simple.bz.dto.LoginResponse;
 import com.simple.bz.dto.UserDto;
+import com.simple.bz.dto.WechatLoginRequest;
 import com.simple.bz.service.AccountService;
 
 import com.simple.common.api.SimpleRequest;
@@ -40,13 +42,13 @@ public class AccountController extends BaseController {
 ////    }
     @ApiOperation(value="微信登录及验证")
     @PostMapping(path = "/wechatLogin")
-    public SimpleResponse<String>  wechatLogin (@RequestBody SimpleRequest<String> request, HttpServletResponse response){
-        String code = request.getParams();
+    public SimpleResponse<LoginResponse>  wechatLogin (@RequestBody SimpleRequest<WechatLoginRequest> request, HttpServletResponse response){
+        String code = request.getParams().getCode();
         String token = service.wechatLogin(code);
         String domainName = appProps.getDomainName();
         Sessions.writeToken(token,domainName,true,response);
-        SimpleResponse<String> result = new SimpleResponse<String>();
-        return  result.success(token);
+        SimpleResponse<LoginResponse> result = new SimpleResponse<LoginResponse>();
+        return  result.success(LoginResponse.builder().token(token).build());
 
 
     }
