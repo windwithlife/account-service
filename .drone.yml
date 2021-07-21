@@ -47,6 +47,7 @@ steps:
       # variables. Must be lowercase, Usage: {{.service_name}}
       app_name: simple-account
       build_tag: build-${DRONE_BUILD_NUMBER}
+      
 volumes:
   - name: mvncache
     host:
