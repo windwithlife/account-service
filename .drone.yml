@@ -43,7 +43,7 @@ steps:
     settings:
       yaml: ./deployment.yaml
       kubeconfig:
-        from_secret: kubeconfig
+        from_secret: kubeconfigk3s
       # variables. Must be lowercase, Usage: {{.service_name}}
       app_name: simple-account
       build_tag: build-${DRONE_BUILD_NUMBER}
