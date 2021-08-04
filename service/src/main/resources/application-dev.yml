@@ -18,8 +18,6 @@ spring:
 
 server:
   port: 5389
-  servlet:
-    context-path: /simple-account
 simple:
   domainName: koudaibook.com
   common:

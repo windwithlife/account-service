@@ -29,9 +29,7 @@ spring:
       topic: "ci/simple/center/soa-server/#"
       completionTimeout: 3000
 
-server:
-  servlet:
-    context-path: /simple-account
+
 simple:
   domainName: koudaibook.com
 

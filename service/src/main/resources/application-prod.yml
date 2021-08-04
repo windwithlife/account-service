@@ -15,9 +15,7 @@ spring:
     password: meetinglive
     port: 31379
 
-server:
-  servlet:
-    context-path: /simple-account
+
 simple:
   domainName: koudaibook.com
 qiniu:

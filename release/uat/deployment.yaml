@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{.app_name}}
+  namespace: default
+  labels:
+    app: app-{{.app_name}}
+    name: {{.app_name}}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-{{.app_name}}
+      name: {{.app_name}}
+  template:
+    metadata:
+      labels:
+        app: app-{{.app_name}}
+        name: {{.app_name}}
+    spec:
+      containers:
+        - name: container-{{.app_name}}
+          image: >-
+                 registry.cn-hangzhou.aliyuncs.com/windwithlife/{{.app_name}}:{{.build_tag}}
+          ports:
+            - containerPort: 80
+              protocol: TCP
+          imagePullPolicy: IfNotPresent
+      restartPolicy: Always
+
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-{{.app_name}}
+spec:
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+      name: http
+  selector:
+    app: app-a{{.app_name}}
+
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-{{.app_name}}
+  annotations:
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
+    nginx.ingress.kubernetes.io/cors-allow-headers: "token,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization"
+    nginx.ingress.kubernetes.io/cors-expose-headers: "token"
+    nginx.ingress.kubernetes.io/ssl-redirect: 'false' #http 自动转https
+spec:
+  ingressClassName: nginx
+  tls:
+  - secretName: {{.soa_gateway_cert}}
+    hosts:
+    - {{.soa_gateway}}
+  rules:
+    - host: {{.soa_gateway}}
+      http:
+        paths:
+          - path: /{{.app_name}}
+            pathType: Prefix
+            backend:
+              serviceName: service-{{.app_name}}
+              servicePort: 80
