@@ -17,7 +17,7 @@ import java.util.List;
 @AllArgsConstructor
 @RestController
 @RequestMapping("/permission")
-@Api(tags = "帐户角色相关的SOA集")
+@Api(tags = "帐户权限相关的SOA集")
 public class PermissionController extends BaseController {
 
     private final PermissionService service;

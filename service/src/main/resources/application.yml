@@ -5,13 +5,6 @@ spring:
     active: dev
   application:
     name: simple-deployment
-  datasource:
-    url: jdbc:mysql://47.101.223.234:3306/userdb?useUnicode=true&characterEncoding=utf-8
-    username: root
-    password: Password!&
-    tomcat:
-      test-while-idle: true
-      validation-query: SELECT 1
 
 simple:
   common:
