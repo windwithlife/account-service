@@ -57,6 +57,9 @@ trigger:
   event:
     - push
 
+
+
+
 ---
 kind: pipeline
 type: docker
