@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
 import java.io.Serializable;
 
 
@@ -14,13 +13,10 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PermissionDto implements Serializable {
-
-    private Long                id;
+public class PermissionNewDto {
     private Long                roleId;
     private String              name;
     private String              url;
     private String              uri;
     private String              method;
-
 }

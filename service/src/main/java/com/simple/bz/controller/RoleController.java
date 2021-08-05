@@ -41,7 +41,7 @@ public class RoleController extends BaseController {
         return result.success(RolesDto.builder().roles(roles).build());
     }
 
-    @ApiOperation(value="根据ID获取房子信息",notes = "用于处理房子信息处理")
+    @ApiOperation(value="根据ID获取角色信息",notes = "")
     @PostMapping(path = "/findById")
     public SimpleResponse<RoleDto> findById (@RequestBody SimpleRequest<IDRequest> request){
         Long houseId = request.getParams().getId();
@@ -52,14 +52,10 @@ public class RoleController extends BaseController {
     }
 
 
-//    @ApiResponses({
-//            @ApiResponse(code=400,message="请求参数没填好"),
-//            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
-//    })
 
     @ApiOperation(value="新增角色",notes = "")
     @PostMapping(path = "/addRole")
-    public SimpleResponse<RoleDto> addNewHouse (@RequestBody SimpleRequest<RoleDto> request){
+    public SimpleResponse<RoleDto> addNewRole (@RequestBody SimpleRequest<RoleDto> request){
         RoleDto dto = request.getParams();
         RoleDto data = service.save(dto);
         SimpleResponse<RoleDto> result = new SimpleResponse<RoleDto>();
@@ -86,5 +82,23 @@ public class RoleController extends BaseController {
         SimpleResponse<IDResponse> result = new SimpleResponse<IDResponse>();
 
         return result.success(IDResponse.builder().id(req.getParams().getId()).build());
+    }
+
+    @ApiOperation(value="绑定权限到角色",notes = "")
+    @PostMapping(path = "/bindPermission")
+    public SimpleResponse<PermissionBindDto> bindPermission (@RequestBody SimpleRequest<PermissionBindDto> request){
+        PermissionBindDto dto = request.getParams();
+        PermissionBindDto data = service.bindPermission(dto);
+        SimpleResponse<PermissionBindDto> result = new SimpleResponse<PermissionBindDto>();
+        return result.success(data);
+    }
+
+    @ApiOperation(value="新增受全局控权限条目",notes = "增加全局受控权限")
+    @PostMapping(path = "/addControlledPermission")
+    public SimpleResponse<PermissionBindDto> addAllPermission (@RequestBody SimpleRequest<PermissionBindDto> request){
+        PermissionBindDto dto = request.getParams();
+        PermissionBindDto data = service.bindControlledPermission(dto);
+        SimpleResponse<PermissionBindDto> result = new SimpleResponse<PermissionBindDto>();
+        return result.success(data);
     }
 }

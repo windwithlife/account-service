@@ -3,8 +3,14 @@ package com.simple.bz.service;
 import com.simple.bz.dao.ContextQuery;
 import com.simple.bz.dao.PermissionRepository;
 
+import com.simple.bz.dao.RolePermissionRepository;
+import com.simple.bz.dao.RoleRepository;
 import com.simple.bz.dto.PermissionDto;
+import com.simple.bz.dto.PermissionNewDto;
 import com.simple.bz.model.PermissionModel;
+import com.simple.bz.model.RoleModel;
+import com.simple.bz.model.RolePermissionModel;
+import com.simple.common.auth.Sessions;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -19,6 +25,8 @@ public class PermissionService {
 
     private final PermissionRepository dao;
     private final ContextQuery contextQuery;
+    private final RolePermissionRepository rolePermissionDao;
+    private final RoleRepository roleDao;
 
     public PermissionModel convertToModel(PermissionDto dto){
         return this.modelMapper.map(dto, PermissionModel.class);
@@ -57,15 +65,22 @@ public class PermissionService {
 
 
     public List<PermissionDto> queryAll(){
-        List<PermissionDto> list = contextQuery.findList("select * from tbl_role", PermissionDto.class);
+        List<PermissionDto> list = contextQuery.findList("select * from tbl_permission", PermissionDto.class);
         return  list;
     }
 
 
-    public PermissionDto save(PermissionDto item){
-        PermissionModel model = this.convertToModel(item);
-        this.dao.save(model);
-        return item;
+    public PermissionDto save(PermissionNewDto item){
+        Long roleId = item.getRoleId();
+        RoleModel roleModel = null;
+        if (null == roleId || roleId < 0){
+            roleModel = RoleModel.builder().id(0L).name("guest").build();
+        }else{
+            roleModel = roleDao.findById(item.getRoleId()).orElse(null);
+        }
+        PermissionModel model = this.modelMapper.map(item, PermissionModel.class);
+        PermissionModel newPermission  = this.dao.save(model);
+        return this.convertToDto(newPermission);
     }
 
     public PermissionDto update(PermissionDto item){

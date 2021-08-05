@@ -9,7 +9,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -220,6 +222,21 @@ public class ContextQuery {
         }
 
         return resultList;
+    }
+
+    @Transactional
+    @Modifying
+    public boolean executeQuery(String querySql) {
+        try {
+            Query listQuery = entityManager.createNativeQuery(querySql);
+            listQuery.executeUpdate();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Failed to execute native sql");
+            return  false;
+        }
+
     }
 
 }

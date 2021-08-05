@@ -5,4 +5,5 @@ import com.simple.bz.model.UserModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface RoleRepository extends JpaRepository<RoleModel, Long>{
+    public RoleModel findOneByName(String name);
 }

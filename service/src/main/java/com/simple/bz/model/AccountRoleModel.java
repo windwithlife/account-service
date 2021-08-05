@@ -1,4 +1,4 @@
-package com.simple.bz.dto;
+package com.simple.bz.model;
 
 
 import lombok.AllArgsConstructor;
@@ -14,13 +14,16 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PermissionDto implements Serializable {
+@Entity
+@Table(name="tbl_account_role")
+public class AccountRoleModel implements Serializable {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long                id;
+    private String              accountId;
     private Long                roleId;
-    private String              name;
-    private String              url;
-    private String              uri;
-    private String              method;
+
+
 
 }

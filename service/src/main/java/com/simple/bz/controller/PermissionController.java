@@ -3,6 +3,8 @@ package com.simple.bz.controller;
 import com.simple.bz.dto.*;
 import com.simple.bz.service.PermissionService;
 import com.simple.bz.service.RoleService;
+import com.simple.common.api.BaseResponse;
+import com.simple.common.api.GenericResponse;
 import com.simple.common.api.SimpleRequest;
 import com.simple.common.api.SimpleResponse;
 import com.simple.common.controller.BaseController;
@@ -33,6 +35,11 @@ public class PermissionController extends BaseController {
         return result.success(PermissionsDto.builder().permissions(permissions).build());
     }
 
+    @GetMapping(path = "/testAuthorize")
+    public BaseResponse testAuth (@RequestParam("param") String param){
+
+        return GenericResponse.buildSuccess("okok response ==>" + param);
+    }
     @ApiOperation(value="根据ID获取权限信息",notes = "")
     @PostMapping(path = "/findById")
     public SimpleResponse<PermissionDto> findById (@RequestBody SimpleRequest<IDRequest> request){
@@ -46,14 +53,14 @@ public class PermissionController extends BaseController {
 
 
     @ApiOperation(value="新增权限",notes = "")
-    @PostMapping(path = "/addRole")
-    public SimpleResponse<PermissionDto> addNewHouse (@RequestBody SimpleRequest<PermissionDto> request){
-        PermissionDto dto = request.getParams();
+    @PostMapping(path = "/addPermission")
+    public SimpleResponse<PermissionDto> addNewPermission (@RequestBody SimpleRequest<PermissionNewDto> request){
+        PermissionNewDto dto = request.getParams();
         PermissionDto data = service.save(dto);
         SimpleResponse<PermissionDto> result = new SimpleResponse<PermissionDto>();
         return result.success(data);
-
     }
+
 
     @ApiOperation(value="修改权限信息",notes = "")
     @PostMapping(path = "/update")

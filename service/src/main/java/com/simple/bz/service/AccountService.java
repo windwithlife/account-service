@@ -1,13 +1,12 @@
 package com.simple.bz.service;
 
 import com.simple.bz.dao.AccountRepository;
+import com.simple.bz.dao.AccountRoleRepository;
 import com.simple.bz.dao.ContextQuery;
 import com.simple.bz.dao.UserRepository;
 import com.simple.bz.dto.AccountDto;
 import com.simple.bz.dto.UserDto;
-import com.simple.bz.model.AccountModel;
-import com.simple.bz.model.AccountType;
-import com.simple.bz.model.UserModel;
+import com.simple.bz.model.*;
 import com.simple.common.auth.Sessions;
 import com.simple.common.error.ServiceException;
 import com.simple.common.wechat.WechatHelper;
@@ -16,13 +15,14 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 @RequiredArgsConstructor
 @Service
 public class AccountService {
     private final ModelMapper modelMapper;
-    
+    private final AccountRoleRepository accountRoleDao;
     private final AccountRepository dao;
     private final UserRepository userDao;
     private final ContextQuery contextQuery;
@@ -37,6 +37,7 @@ public class AccountService {
         }
         return resultList;
     }
+
     public AccountDto convertToDto(AccountModel model){
         return this.modelMapper.map(model, AccountDto.class);
     }
@@ -61,7 +62,8 @@ public class AccountService {
             UserModel userModel = UserModel.builder().userId(newModel.getId()).loginName(openId).build();
             UserModel newUserModel = userDao.save(userModel);
             System.out.println("new account--->" + newModel.toString() +"UserInfo--->" + newUserModel.toString());
-            String token = Sessions.createTokenWithUserInfo(newModel.getId(), "guest", openId, "");
+            String rolesString = this.getAccountRolesString(model.getId());
+            String token = Sessions.createTokenWithUserInfo(newModel.getId(), rolesString, openId, "");
             return token;
         }else{
             String token = Sessions.createTokenWithUserInfo(oldModel.getId(), "guest", openId, "");
@@ -77,7 +79,8 @@ public class AccountService {
             throw new ServiceException("该用户已存在");
         }else{
             model = this.convertToModel(account);
-            this.dao.save(model);
+            AccountModel newAccount = this.dao.save(model);
+            this.accountRoleDao.save(AccountRoleModel.builder().accountId(newAccount.getId()).roleId(RoleModel.DEFAULT_ROLE_ID).build());
             System.out.println("sign account model info ===>" +  model.toString());
             return this.convertToDto(model);
         }
@@ -89,7 +92,8 @@ public class AccountService {
             throw new ServiceException("该用户不存在");
         }else{
            if(model.getPassword().equals(account.getPassword())){
-               token = Sessions.createTokenWithUserInfo(account.getId(), "guest", "", "");
+               String rolesString = this.getAccountRolesString(model.getId());
+               token = Sessions.createTokenWithUserInfo(account.getId(), rolesString, "", "");
                return token;
            }else{
                throw new ServiceException("用户密码不正确");
@@ -97,6 +101,24 @@ public class AccountService {
         }
     }
 
+
+    protected String getAccountRolesString(String accountId){
+        List<RoleModel> roles = contextQuery.findList("select * from tbl_account_role where accountId='" + accountId + "'",RoleModel.class);
+        StringBuffer rolesString = new StringBuffer();
+        if (null != roles){
+            Iterator<RoleModel> iter = roles.iterator();
+            while (iter.hasNext()) {
+                RoleModel s = (RoleModel) iter.next();
+                rolesString.append(",").append(s.getName());
+            }
+            rolesString.deleteCharAt(0);
+        }else{
+            rolesString.append("guest");
+        }
+
+        System.out.println("Current account role is==>" + rolesString.toString());
+        return rolesString.toString();
+    }
     public AccountDto updateAccount(AccountDto dto){
         AccountModel model =  dao.findById(dto.getId()).get();
         this.modelMapper.map(dto, model);
