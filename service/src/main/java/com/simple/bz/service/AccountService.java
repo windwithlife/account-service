@@ -13,6 +13,7 @@ import com.simple.common.wechat.WechatHelper;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -51,6 +52,7 @@ public class AccountService {
 
     }
 
+    @Transactional
     public String wechatLogin(String code ){
         String openId = WechatHelper.getWechatOpenId(code);
         System.out.println("OpenId---->" + openId);
@@ -111,6 +113,7 @@ public class AccountService {
                 RoleModel s = (RoleModel) iter.next();
                 rolesString.append(",").append(s.getName());
             }
+            System.out.println(rolesString.toString());
             rolesString.deleteCharAt(0);
         }else{
             rolesString.append("guest");
