@@ -17,17 +17,7 @@ spring:
     host: manager.e-healthcare.net
     password: meetinglive
     port: 31379
-  mqtt:
-    server:
-      username: ""
-      password: ""
-      url:  tcp://mq.koudaibook.com:30883
-    client:
-      publishId: "publish-id"
-      subscribeId: "subscribe-id"
-    default:
-      topic: "ci/simple/center/soa-server/#"
-      completionTimeout: 3000
+  
 
 
 simple:
