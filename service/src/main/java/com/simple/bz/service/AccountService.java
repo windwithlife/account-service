@@ -75,6 +75,7 @@ public class AccountService {
 
     }
 
+    @Transactional
     public AccountDto signup(AccountDto account){
         AccountModel model = dao.findOneByName(account.getName());
         if (null != model){
@@ -87,6 +88,7 @@ public class AccountService {
             return this.convertToDto(model);
         }
     }
+    @Transactional
     public String login(AccountDto account){
         AccountModel model = dao.findOneByName(account.getName());
         String token = "";
@@ -122,6 +124,7 @@ public class AccountService {
         System.out.println("Current account role is==>" + rolesString.toString());
         return rolesString.toString();
     }
+    @Transactional
     public AccountDto updateAccount(AccountDto dto){
         AccountModel model =  dao.findById(dto.getId()).get();
         this.modelMapper.map(dto, model);
