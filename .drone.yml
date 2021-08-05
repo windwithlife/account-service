@@ -39,7 +39,7 @@ steps:
       yaml: ./release/prod/deployment.yaml
       kubeconfig:
         from_secret: kubeconfig
-      app_name: example
+      app_name: simple-account
       image_name: registry.cn-hangzhou.aliyuncs.com/windwithlife/accountcenter
       soa_gateway: api.koudaibook.com
       soa_gateway_cert: api-koudaibook-cert
