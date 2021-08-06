@@ -62,8 +62,7 @@ spec:
           - path: /{{.app_name}}
             pathType: Prefix
             backend:
-              service:
-                serviceName: service-{{.app_name}}
-                servicePort: 80
+              serviceName: service-{{.app_name}}
+              servicePort: 80
 
 
