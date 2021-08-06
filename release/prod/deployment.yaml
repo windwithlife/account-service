@@ -43,7 +43,7 @@ spec:
     app: app-{{.app_name}}
 
 ---
-apiVersion: networking.k8s.io/v1
+apiVersion: networking.k8s.io/v1beta
 kind: Ingress
 metadata:
   name: ingress-{{.app_name}}
