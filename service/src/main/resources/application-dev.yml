@@ -15,7 +15,6 @@ spring:
     password: 12345678
     port: 6379
 
-
 server:
   port: 5389
 simple:
