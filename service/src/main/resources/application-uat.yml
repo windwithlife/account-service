@@ -15,7 +15,7 @@ spring:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
   redis:
     host: mq.zhangyongqiao.com
-    password: 123456
+    password: 12345678
     port: 6379
   
 
