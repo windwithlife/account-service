@@ -11,9 +11,9 @@ spring:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
   redis:
-    host: manager.e-healthcare.net
-    password: meetinglive
-    port: 31379
+    host: mq.zhangyongqiao.com
+    password: 123456
+    port: 6379
 
 
 simple:

@@ -4,7 +4,7 @@ spring:
   profiles:
     active: dev
   application:
-    name: simple-deployment
+    name: simple-account
 
 simple:
   common:
