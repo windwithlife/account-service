@@ -1,10 +1,7 @@
 kind: pipeline
 type: docker
-name: example-PROD
+name: account-service-PROD
 
-
-environment:
-  APPLICATION_NAME : accountcenter
 
 steps:
   - name: 编译打包代码
@@ -13,8 +10,7 @@ steps:
       - name : mvncache
         path : /root/.m2
     commands:
-      - echo 'test echo'
-      - echo ${APPLICATION_NAME}
+      - echo 'start to compile and package'
       - cd  ./service
       - mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true -B
 
@@ -23,7 +19,7 @@ steps:
     settings:
       dockerfile: ./release/prod/Dockerfile
       use_cache: true
-      repo: registry.cn-hangzhou.aliyuncs.com/windwithlife/accountcenter
+      repo: registry.cn-hangzhou.aliyuncs.com/windwithlife/account-service
       registry: https://registry.cn-hangzhou.aliyuncs.com
       mirror: https://89cgb0wn.mirror.aliyuncs.com
       username: 379163259@qq.com
@@ -39,8 +35,8 @@ steps:
       yaml: ./release/prod/deployment.yaml
       kubeconfig:
         from_secret: kubeconfig
-      app_name: simple-account
-      image_name: registry.cn-hangzhou.aliyuncs.com/windwithlife/accountcenter
+      app_name: account-service
+      image_name: registry.cn-hangzhou.aliyuncs.com/windwithlife/account-service
       soa_gateway: api.koudaibook.com
       soa_gateway_cert: api-koudaibook-cert
       build_tag: build-${DRONE_BUILD_NUMBER}
@@ -53,7 +49,7 @@ volumes:
 
 trigger:
   branch:
-    - master
+    - main
   event:
     - push
 
@@ -62,10 +58,8 @@ trigger:
 ---
 kind: pipeline
 type: docker
-name: AccountCenter-UAT
+name: account-service-UAT
 
-environment:
-  APPLICATION_NAME : accountcenter
 
 steps:
   - name: 编译打包代码
@@ -74,18 +68,16 @@ steps:
       - name : mvncache
         path : /root/.m2
     commands:
-      - echo 'test echo'
-      - echo ${APPLICATION_NAME}
-      - echo $${APPLICATION_NAME}
+      - echo 'start to compile and package'
       - cd  ./service
-      - mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true -B
+      - mvn clean package -DskipTests=true -Dmaven.javadoc.skip=true -B
 
   - name: 构建镜像&PUSH镜像到Hub(UAT).
     image: plugins/docker
     settings:
       dockerfile: ./release/prod/Dockerfile
       use_cache: true
-      repo: ccr.ccs.tencentyun.com/windwithlife/accountcenter
+      repo: ccr.ccs.tencentyun.com/windwithlife/account-service
       registry: https://ccr.ccs.tencentyun.com/
       mirror: https://89cgb0wn.mirror.aliyuncs.com
       username: 100008098144
@@ -102,8 +94,8 @@ steps:
       yaml: ./release/prod/deployment.yaml
       kubeconfig:
         from_secret: kubeconfig
-      app_name: accountcenter
-      image_name: ccr.ccs.tencentyun.com/windwithlife/accountcenter
+      app_name: account-service
+      image_name: ccr.ccs.tencentyun.com/windwithlife/account-service
       soa_gateway: api.zhangyongqiao.com
       soa_gateway_cert: api-koudaibook-cert
       build_tag: build-${DRONE_BUILD_NUMBER}
