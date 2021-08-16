@@ -1,10 +1,7 @@
 kind: pipeline
 type: docker
-name: example-PROD
+name: simple-account-PROD
 
-
-environment:
-  APPLICATION_NAME : accountcenter
 
 steps:
   - name: 编译打包代码
@@ -23,7 +20,7 @@ steps:
     settings:
       dockerfile: ./release/prod/Dockerfile
       use_cache: true
-      repo: registry.cn-hangzhou.aliyuncs.com/windwithlife/accountcenter
+      repo: registry.cn-hangzhou.aliyuncs.com/windwithlife/simple-account
       registry: https://registry.cn-hangzhou.aliyuncs.com
       mirror: https://89cgb0wn.mirror.aliyuncs.com
       username: 379163259@qq.com
@@ -40,7 +37,7 @@ steps:
       kubeconfig:
         from_secret: kubeconfig
       app_name: simple-account
-      image_name: registry.cn-hangzhou.aliyuncs.com/windwithlife/accountcenter
+      image_name: registry.cn-hangzhou.aliyuncs.com/windwithlife/simple-account
       soa_gateway: api.koudaibook.com
       soa_gateway_cert: api-koudaibook-cert
       build_tag: build-${DRONE_BUILD_NUMBER}
@@ -62,10 +59,9 @@ trigger:
 ---
 kind: pipeline
 type: docker
-name: AccountCenter-UAT
+name: simple-account-UAT
 
-environment:
-  APPLICATION_NAME : accountcenter
+
 
 steps:
   - name: 编译打包代码
@@ -85,7 +81,7 @@ steps:
     settings:
       dockerfile: ./release/prod/Dockerfile
       use_cache: true
-      repo: ccr.ccs.tencentyun.com/windwithlife/accountcenter
+      repo: ccr.ccs.tencentyun.com/windwithlife/simple-account
       registry: https://ccr.ccs.tencentyun.com/
       mirror: https://89cgb0wn.mirror.aliyuncs.com
       username: 100008098144
@@ -102,8 +98,8 @@ steps:
       yaml: ./release/prod/deployment.yaml
       kubeconfig:
         from_secret: kubeconfig
-      app_name: accountcenter
-      image_name: ccr.ccs.tencentyun.com/windwithlife/accountcenter
+      app_name: simple-account
+      image_name: ccr.ccs.tencentyun.com/windwithlife/simple-account
       soa_gateway: api.zhangyongqiao.com
       soa_gateway_cert: api-koudaibook-cert
       build_tag: build-${DRONE_BUILD_NUMBER}
