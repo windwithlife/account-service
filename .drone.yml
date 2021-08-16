@@ -89,6 +89,7 @@ steps:
         - build-${DRONE_BUILD_NUMBER}
 
 
+
   - name: 部署到集群-(UAT)
     image: bh90210/dron8s:latest
     settings:
