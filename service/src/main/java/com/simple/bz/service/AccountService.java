@@ -110,7 +110,7 @@ public class AccountService {
     protected String getAccountRolesString(String accountId){
         List<RoleModel> roles = contextQuery.findList("select * from tbl_account_role where accountId='" + accountId + "'",RoleModel.class);
         StringBuffer rolesString = new StringBuffer();
-        if (null != roles){
+        if (null != roles && roles.size() >0){
             Iterator<RoleModel> iter = roles.iterator();
             while (iter.hasNext()) {
                 RoleModel s = (RoleModel) iter.next();
