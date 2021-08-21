@@ -57,8 +57,9 @@ public class AccountService {
         String openId = WechatHelper.getWechatOpenId(code);
         System.out.println("OpenId---->" + openId);
 
-        AccountModel oldModel = dao.findOneByOpenId(openId);
-        if(null == oldModel){
+        List<AccountModel> matchModels = dao.findByOpenId(openId);
+
+        if(null == matchModels || matchModels.size()<= 0 ){
             AccountModel model = AccountModel.builder().openId(openId).type(AccountType.WECHAT_MINI_PROGRAM).build();
             AccountModel newModel =  dao.save(model);
             UserModel userModel = UserModel.builder().userId(newModel.getId()).loginName(openId).build();
@@ -68,13 +69,13 @@ public class AccountService {
             String token = Sessions.createTokenWithUserInfo(newModel.getId(), rolesString, openId, "");
             return token;
         }else{
+            AccountModel oldModel = matchModels.get(0);
             String token = Sessions.createTokenWithUserInfo(oldModel.getId(), "guest", openId, "");
             return token;
         }
 
 
     }
-
     @Transactional
     public AccountDto signup(AccountDto account){
         AccountModel model = dao.findOneByName(account.getName());
@@ -113,10 +114,10 @@ public class AccountService {
             Iterator<RoleModel> iter = roles.iterator();
             while (iter.hasNext()) {
                 RoleModel s = (RoleModel) iter.next();
-                rolesString.append(",").append(s.getName());
+                rolesString.append(s.getName()).append(",");
             }
             System.out.println(rolesString.toString());
-            rolesString.deleteCharAt(0);
+
         }else{
             rolesString.append("guest");
         }
