@@ -9,6 +9,7 @@ import com.simple.bz.dto.UserDto;
 import com.simple.bz.model.*;
 import com.simple.common.auth.Sessions;
 import com.simple.common.error.ServiceException;
+import com.simple.common.utils.DateUtil;
 import com.simple.common.wechat.WechatHelper;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -60,9 +61,9 @@ public class AccountService {
         List<AccountModel> matchModels = dao.findByOpenId(openId);
 
         if(null == matchModels || matchModels.size()<= 0 ){
-            AccountModel model = AccountModel.builder().openId(openId).type(AccountType.WECHAT_MINI_PROGRAM).build();
+            AccountModel model = AccountModel.builder().openId(openId).type(AccountType.WECHAT_MINI_PROGRAM.ordinal()).build();
             AccountModel newModel =  dao.save(model);
-            UserModel userModel = UserModel.builder().userId(newModel.getId()).loginName(openId).build();
+            UserModel userModel = UserModel.builder().userId(newModel.getId()).build();
             UserModel newUserModel = userDao.save(userModel);
             System.out.println("new account--->" + newModel.toString() +"UserInfo--->" + newUserModel.toString());
             String rolesString = this.getAccountRolesString(model.getId());
@@ -83,6 +84,7 @@ public class AccountService {
             throw new ServiceException("该用户已存在");
         }else{
             model = this.convertToModel(account);
+            model.setType(AccountType.NORMAL.ordinal());
             AccountModel newAccount = this.dao.save(model);
             this.accountRoleDao.save(AccountRoleModel.builder().accountId(newAccount.getId()).roleId(RoleModel.DEFAULT_ROLE_ID).build());
             System.out.println("sign account model info ===>" +  model.toString());
@@ -163,11 +165,20 @@ public class AccountService {
 
     }
 
-    public List<AccountDto> queryAll(){
-        List<AccountDto> list = contextQuery.findList("select * from tbl_account", AccountDto.class);
+    public List<AccountDto> queryAdminUsers(){
+        String queryString = "select * from tbl_account where type=" + String.valueOf(AccountType.ADMIN_USER.ordinal());
+        System.out.println("QueryAdminUsers SQL ==>" + queryString);
+        List<AccountDto> list = contextQuery.findList(queryString, AccountDto.class);
         return  list;
     }
 
+    public AccountDto addAdminUser(AccountDto item){
+        AccountModel model = this.convertToModel(item);
+        model.setName(item.getLoginName());
+        model.setType(AccountType.ADMIN_USER.ordinal());
+        this.dao.save(model);
+        return item;
+    }
 
 
     public AccountDto save(AccountDto item){
@@ -187,8 +198,53 @@ public class AccountService {
         return item;
     }
 
-    public void remove(String id){
-        this.dao.deleteById(id);
+    public boolean remove(String id) {
+        AccountModel model = this.dao.findById(id).orElse(null);
+        if (AccountModel.isAdministrator(model.getName())){
+            throw new ServiceException("Can't delete the administrator user");
+        }
+        try{
+
+            this.dao.deleteById(id);
+            return true;
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+
+    }
+    public void  removeBatch(List<String> ids) {
+        AccountModel model = this.dao.findOneByName(AccountModel.ADMIN_USER_NAME);
+        if (null == model){
+            return ;
+        }
+        String adminUserId = model.getId();
+        if (ids.contains(adminUserId) || ids.contains(adminUserId)){
+            throw new ServiceException("Admin user are not permitted to remove!");
+        }
+        try{
+            int removeRows = this.dao.deleteBatch(ids);
+            System.out.println("have remove rows number ==>"  + String.valueOf(removeRows));
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+    }
+
+
+    public void loadAdministratorUser(){
+         //保证库里有可用的缺省用户及超级用户
+        List<AccountModel> superModels = dao.findByLoginName(AccountModel.ADMIN_USER_NAME);
+        if ((null == superModels) || (superModels.size() <=0) ){
+            AccountModel adminModel = AccountModel.builder().name(AccountModel.ADMIN_USER_NAME)
+                    .loginName(AccountModel.ADMIN_USER_NAME).password(AccountModel.ADMIN_USER_NAME)
+                    .nickName("Administrator").type(AccountType.ADMIN_USER.ordinal()).build();
+            AccountModel newModel = dao.save(adminModel);
+            accountRoleDao.save(AccountRoleModel.builder().accountId(newModel.getId()).roleId(RoleModel.ADMIN_ROLE_ID).build());
+            userDao.save(UserModel.builder().userId(newModel.getId()).createdDate(DateUtil.getDateToday()).updatedDate(DateUtil.getDateToday()).build());
+        }
+
+
     }
 
 }

@@ -167,8 +167,31 @@ public class RoleService {
         return item;
     }
 
-    public void remove(Long id) {
-        this.dao.deleteById(id);
+    public boolean remove(Long id) {
+        if ((RoleModel.ADMIN_ROLE_ID == id) || (RoleModel.DEFAULT_ROLE_ID == id)){
+            throw new ServiceException("Admin,Guest Roles are not permitted to remove!");
+        }
+        try{
+
+            this.dao.deleteById(id);
+            return true;
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+
+    }
+    public void  removeBatch(List<Long> ids) {
+        if (ids.contains(RoleModel.ADMIN_ROLE_ID) || ids.contains(RoleModel.DEFAULT_ROLE_ID)){
+            throw new ServiceException("Admin,Guest Roles are not permitted to remove!");
+        }
+        try{
+            int removeRows = this.dao.deleteBatch(ids);
+            System.out.println("have remove rows number ==>"  + String.valueOf(removeRows));
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
 
 }

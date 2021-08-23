@@ -97,4 +97,14 @@ public class PermissionService {
         this.dao.deleteById(id);
     }
 
+    public void  removeBatch(List<Long> ids) {
+        try{
+            int removeRows = this.dao.deleteBatch(ids);
+            System.out.println("have remove rows number ==>"  + String.valueOf(removeRows));
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+    }
+
 }

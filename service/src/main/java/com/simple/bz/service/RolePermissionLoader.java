@@ -11,10 +11,12 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class RolePermissionLoader implements ApplicationRunner {
     private final RoleService roleService;
+    private final AccountService accountService;
 
     @Override
     public void run(ApplicationArguments args){
         roleService.loadRoleAndPermissions();
+        accountService.loadAdministratorUser();
     }
 
 }
