@@ -5,8 +5,7 @@ import com.simple.bz.dto.*;
 import com.simple.bz.model.AccountType;
 import com.simple.bz.service.AccountService;
 
-import com.simple.common.api.SimpleRequest;
-import com.simple.common.api.SimpleResponse;
+import com.simple.common.api.*;
 import com.simple.common.auth.AuthModel;
 import com.simple.common.auth.LoginUser;
 import com.simple.common.auth.SessionUser;
@@ -106,6 +105,18 @@ public class AccountController extends BaseController {
         return  ret.success(userInfo);
     }
 
+
+
+    @ApiOperation(value="验证登录")
+    @PostMapping(path = "/currentUser")
+    public SimpleResponse<LoginResponse>  assertLoginStatus(@LoginUser SessionUser user){
+        if (!user.isLoginUser()){
+            throw new ServiceException(ResultCode.UN_AUTHORIZED);
+        }
+        LoginResponse response = LoginResponse.builder().isLogin(user.isLoginUser()).token(user.getToken()).build();
+        SimpleResponse<LoginResponse> result = new SimpleResponse<LoginResponse>();
+        return  result.success(response);
+    }
     @ApiOperation(value="微信登录及验证")
     @PostMapping(path = "/wechatLogin")
     public SimpleResponse<LoginResponse>  wechatLogin (@RequestBody SimpleRequest<WechatLoginRequest> request, HttpServletResponse response){
@@ -172,18 +183,20 @@ public class AccountController extends BaseController {
     }
     @ApiOperation(value="普通用户登录")
     @PostMapping(path = "/login")
-    public SimpleResponse<AccountDto>  login (@RequestBody SimpleRequest<AccountDto> request, HttpServletResponse response){
-        AccountDto account = request.getParams();
+    public BaseResponse login (@RequestBody SimpleRequest<AccountLoginDto> request, HttpServletResponse response){
+        AccountLoginDto accountLogin = request.getParams();
 
-        String token = service.login(account);
+        String token = service.login(accountLogin);
         if (StringUtils.isBlank(token)){
             throw new ServiceException("登录失败");
         }
-        account.setToken(token);
+
         String domainName = appProps.getDomainName();
-        Sessions.writeToken(token,domainName,true,response);
-        SimpleResponse<AccountDto> ret= new SimpleResponse<AccountDto>();
-        return  ret.success(account);
+        boolean rememberMe = accountLogin.isAutoLogin();
+
+        Sessions.writeToken(token,domainName,rememberMe,response);
+
+        return BaseResponse.buildSuccess();
 
     }
     @ApiOperation(value="普通用户登出")

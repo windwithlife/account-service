@@ -5,6 +5,7 @@ import com.simple.bz.dao.AccountRoleRepository;
 import com.simple.bz.dao.ContextQuery;
 import com.simple.bz.dao.UserRepository;
 import com.simple.bz.dto.AccountDto;
+import com.simple.bz.dto.AccountLoginDto;
 import com.simple.bz.dto.UserDto;
 import com.simple.bz.model.*;
 import com.simple.common.auth.Sessions;
@@ -92,20 +93,35 @@ public class AccountService {
         }
     }
     @Transactional
-    public String login(AccountDto account){
-        AccountModel model = dao.findOneByName(account.getName());
-        String token = "";
-        if (null == model){
-            throw new ServiceException("该用户不存在");
-        }else{
-           if(model.getPassword().equals(account.getPassword())){
-               String rolesString = this.getAccountRolesString(model.getId());
-               token = Sessions.createTokenWithUserInfo(account.getId(), rolesString, "", "");
-               return token;
-           }else{
-               throw new ServiceException("用户密码不正确");
-           }
+    public String login(AccountLoginDto accountLogin){
+        AccountModel model = null; String password = "";
+        String loginType = accountLogin.getType();
+        if (loginType.equalsIgnoreCase("account")){
+            model = dao.findOneByName(accountLogin.getUsername());
+            if(null== model){
+                throw new ServiceException("该用户不存在");
+            }
+            password = model.getPassword();
+
         }
+        if (loginType.equalsIgnoreCase("mobile")){
+            model = dao.findOneByPhoneNumber(accountLogin.getMobile());
+            if(null== model){
+                throw new ServiceException("该用户不存在");
+            }
+            password = model.getPassword();
+        }
+
+
+        if(!password.equals(accountLogin.getPassword())){
+            throw new ServiceException("密码不正确");
+        }
+
+        String rolesString = this.getAccountRolesString(model.getId());
+        String token = Sessions.createTokenWithUserInfo(model.getId(), rolesString, "", "");
+        return token;
+
+
     }
 
 
@@ -234,10 +250,10 @@ public class AccountService {
 
     public void loadAdministratorUser(){
          //保证库里有可用的缺省用户及超级用户
-        List<AccountModel> superModels = dao.findByLoginName(AccountModel.ADMIN_USER_NAME);
+        List<AccountModel> superModels = dao.findByName(AccountModel.ADMIN_USER_NAME);
         if ((null == superModels) || (superModels.size() <=0) ){
             AccountModel adminModel = AccountModel.builder().name(AccountModel.ADMIN_USER_NAME)
-                    .loginName(AccountModel.ADMIN_USER_NAME).password(AccountModel.ADMIN_USER_NAME)
+                    .password(AccountModel.ADMIN_USER_NAME)
                     .nickName("Administrator").type(AccountType.ADMIN_USER.ordinal()).build();
             AccountModel newModel = dao.save(adminModel);
             accountRoleDao.save(AccountRoleModel.builder().accountId(newModel.getId()).roleId(RoleModel.ADMIN_ROLE_ID).build());

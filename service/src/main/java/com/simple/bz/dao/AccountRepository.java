@@ -10,9 +10,11 @@ import java.util.List;
 
 public interface AccountRepository extends JpaRepository<AccountModel, String>{
     public AccountModel findOneByName(String name);
+
+    public List<AccountModel> findByName(String name);
     public AccountModel findOneByOpenId(String openId);
     public List<AccountModel> findByOpenId(String openId);
-    public List<AccountModel> findByLoginName(String name);
+    public AccountModel findOneByPhoneNumber(String name);
 
     @Modifying
     @Transactional

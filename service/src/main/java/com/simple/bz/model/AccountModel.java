@@ -32,7 +32,6 @@ public class AccountModel {
     @Column(columnDefinition = "varchar(250)")
     private String id;
     private String name;
-    private String loginName;
     private String nickName;
     private String password;
     private String passwordHash;
