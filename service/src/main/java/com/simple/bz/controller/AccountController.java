@@ -108,12 +108,17 @@ public class AccountController extends BaseController {
 
 
     @ApiOperation(value="验证登录")
-    @PostMapping(path = "/currentUser")
+    @GetMapping(path = "/currentUser")
     public SimpleResponse<LoginResponse>  assertLoginStatus(@LoginUser SessionUser user){
         if (!user.isLoginUser()){
             throw new ServiceException(ResultCode.UN_AUTHORIZED);
         }
-        LoginResponse response = LoginResponse.builder().isLogin(user.isLoginUser()).token(user.getToken()).build();
+        AccountDto account = service.findById(user.getUserId());
+        List<String> roles = service.getAccountRoles(user.getUserId());
+        LoginResponse response = LoginResponse.builder().isLogin(user.isLoginUser())
+                .token(user.getToken()).name(account.getNickName())
+                .photoUrl(account.getPhotoUrl())
+                .roles(roles).build();
         SimpleResponse<LoginResponse> result = new SimpleResponse<LoginResponse>();
         return  result.success(response);
     }
@@ -183,8 +188,8 @@ public class AccountController extends BaseController {
     }
     @ApiOperation(value="普通用户登录")
     @PostMapping(path = "/login")
-    public BaseResponse login (@RequestBody SimpleRequest<AccountLoginDto> request, HttpServletResponse response){
-        AccountLoginDto accountLogin = request.getParams();
+    public SimpleResponse<LoginResponse> login (@RequestBody SimpleRequest<LoginRequest> request, HttpServletResponse response){
+        LoginRequest accountLogin = request.getParams();
 
         String token = service.login(accountLogin);
         if (StringUtils.isBlank(token)){
@@ -195,8 +200,8 @@ public class AccountController extends BaseController {
         boolean rememberMe = accountLogin.isAutoLogin();
 
         Sessions.writeToken(token,domainName,rememberMe,response);
-
-        return BaseResponse.buildSuccess();
+        SimpleResponse<LoginResponse> result = new SimpleResponse<LoginResponse>();
+        return result.success(LoginResponse.builder().token(token).build());
 
     }
     @ApiOperation(value="普通用户登出")

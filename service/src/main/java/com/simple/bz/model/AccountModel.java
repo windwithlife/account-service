@@ -39,7 +39,6 @@ public class AccountModel {
     private String unionId;
     private String  email;
     private int     type;
-
     private String  createdName; //创建人
     private boolean confirmedAndActive;
     private String phoneNumber;

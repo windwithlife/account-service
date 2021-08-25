@@ -26,6 +26,7 @@ public class AccountDto {
     private String email;
     private String phoneNumber;
     private String photoUrl;
+    private String roles;
     private int    type;
     public String createUserId(){
         return "";

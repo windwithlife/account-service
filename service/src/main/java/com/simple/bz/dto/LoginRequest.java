@@ -10,15 +10,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 
-public class AccountLoginDto {
+public class LoginRequest {
     private String username;
-    private String loginName;
     private String password;
-    private String token;
     private String email;
     private String mobile;
     private String domain;
-    private String photoUrl;
     private boolean autoLogin;
     private String type;
 }
