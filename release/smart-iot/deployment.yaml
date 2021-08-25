@@ -49,7 +49,6 @@ metadata:
   name: ingress-{{.app_name}}
   annotations:
     nginx.ingress.kubernetes.io/enable-cors: "true"
-    nginx.ingress.kubernetes.io/rewrite-target: /account-service
 spec:
   tls:
   - secretName: {{.soa_gateway_cert}}
@@ -64,10 +63,28 @@ spec:
             backend:
               serviceName: service-{{.app_name}}
               servicePort: 80
+         
+
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-simple-account
+  annotations:
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /account-service
+spec:
+  tls:
+  - secretName: {{.soa_gateway_cert}}
+    hosts:
+    - {{.soa_gateway}}
+  rules:
+    - host: {{.soa_gateway}}
+      http:
+        paths:
           - path: /simple-account
             pathType: Prefix
             backend:
               serviceName: service-{{.app_name}}
               servicePort: 80
-
 
