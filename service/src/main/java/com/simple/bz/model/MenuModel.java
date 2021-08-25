@@ -15,12 +15,13 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name="tbl_permission")
-public class PermissionModel implements Serializable {
+@Table(name="tbl_menu")
+public class MenuModel implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long                id;
     private String              name;
+    private int                 iconType;
     private String              description;
     private String              uri;
     private String              method;

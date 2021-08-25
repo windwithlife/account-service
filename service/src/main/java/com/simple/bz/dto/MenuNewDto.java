@@ -1,4 +1,4 @@
-package com.simple.bz.model;
+package com.simple.bz.dto;
 
 
 import lombok.AllArgsConstructor;
@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
 import java.io.Serializable;
 
 
@@ -14,16 +13,11 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Entity
-@Table(name="tbl_permission")
-public class PermissionModel implements Serializable {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long                id;
+public class MenuNewDto implements Serializable {
+
     private String              name;
     private String              description;
     private String              uri;
     private String              method;
-    private String              domain;
 
 }

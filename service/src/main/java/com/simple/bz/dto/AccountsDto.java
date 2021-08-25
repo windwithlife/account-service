@@ -1,22 +1,21 @@
 package com.simple.bz.dto;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.List;
+
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+public class AccountsDto implements Serializable {
+    List<AccountDto>       accounts;
+    private String         domain;
 
-public class LoginResponse {
-    private String name;
-    private String token;
-    private String openId;
-    private String photoUrl;
-    private List<String> roles;
-    private boolean isLogin;
 }

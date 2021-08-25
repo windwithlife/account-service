@@ -84,6 +84,17 @@ public class RoleController extends BaseController {
         return result.success(IDResponse.builder().id(req.getParams().getId()).build());
     }
 
+    @ApiOperation(value="批量删除角色",notes = "")
+    @ResponseBody
+    @RequestMapping(value = "/removeBatch", method = RequestMethod.POST)
+    public SimpleResponse<IDResponse> removeBatch(@RequestBody SimpleRequest<BatchIDRequest> req) {
+        System.out.println(req.getParams().getIds().toString());
+        SimpleResponse<IDResponse> result = new SimpleResponse<IDResponse>();
+        service.removeBatch(req.getParams().getIds());
+        return result.success(IDResponse.builder().id(0L).build());
+    }
+
+
     @ApiOperation(value="绑定权限到角色",notes = "")
     @PostMapping(path = "/bindPermission")
     public SimpleResponse<PermissionBindDto> bindPermission (@RequestBody SimpleRequest<PermissionBindDto> request){

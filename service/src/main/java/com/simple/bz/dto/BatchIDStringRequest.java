@@ -11,12 +11,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-
-public class LoginResponse {
-    private String name;
-    private String token;
-    private String openId;
-    private String photoUrl;
-    private List<String> roles;
-    private boolean isLogin;
+public class BatchIDStringRequest {
+    List<String> ids;
 }

@@ -1,14 +1,11 @@
 package com.simple.bz.controller;
 
-import com.simple.bz.dto.AccountDto;
+import com.simple.bz.dto.*;
 
-import com.simple.bz.dto.LoginResponse;
-import com.simple.bz.dto.UserDto;
-import com.simple.bz.dto.WechatLoginRequest;
+import com.simple.bz.model.AccountType;
 import com.simple.bz.service.AccountService;
 
-import com.simple.common.api.SimpleRequest;
-import com.simple.common.api.SimpleResponse;
+import com.simple.common.api.*;
 import com.simple.common.auth.AuthModel;
 import com.simple.common.auth.LoginUser;
 import com.simple.common.auth.SessionUser;
@@ -24,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 @AllArgsConstructor
 @RestController
@@ -34,15 +32,96 @@ public class AccountController extends BaseController {
     private final AccountService service;
     private final AppProps appProps;
 
-//    @ApiOperation(value="库里所有帐户（用于测试)"）
-//    @PostMapping(path = "/queryAll")
-//    public SimpleResponse<AccountDto> queryAll (){
-//
-//        List<AccountDto> rooms = service.queryAll();
-//        SimpleResponse<RoomsDto> result = new SimpleResponse<RoomsDto>();
-//
-//        return result.success(RoomsDto.builder().roomList(rooms).houseId(-1L).build());
-////    }
+    @ApiOperation(value="获取平台系统管理用户")
+    @PostMapping(path = "/queryAdminUsers")
+    public SimpleResponse<AccountsDto> queryAdminUsers(){
+        List<AccountDto> accounts = service.queryAdminUsers();
+        SimpleResponse<AccountsDto> result = new SimpleResponse<AccountsDto>();
+        return result.success(AccountsDto.builder().accounts(accounts).build());
+    }
+
+
+    @ApiOperation(value="新增系统管理用户")
+    @PostMapping(path = "/addAdminUser")
+    public SimpleResponse<AccountDto> addAdminUser (@RequestBody SimpleRequest<AccountDto> params){
+        AccountDto account = params.getParams();
+        AccountDto newAccount = service.addAdminUser(account);
+        SimpleResponse<AccountDto> ret= new SimpleResponse<AccountDto>();
+        return  ret.success(newAccount);
+
+    }
+
+    @ApiOperation(value="删除系统管理帐户")
+    @PostMapping(path = "/removeAdminUser")
+    public SimpleResponse<IDStringRequest> removeAdminUser (@RequestBody SimpleRequest<IDStringRequest> params){
+        IDStringRequest account = params.getParams();
+        if ((null != account) && (StringUtils.isNotBlank(account.getId()))){
+            service.remove(account.getId());
+        }
+        SimpleResponse<IDStringRequest> ret= new SimpleResponse<IDStringRequest>();
+        return  ret.success(account);
+    }
+
+    @ApiOperation(value="批量删除系统帐户",notes = "")
+    @ResponseBody
+    @RequestMapping(value = "/removeBatchAdminUsers", method = RequestMethod.POST)
+    public SimpleResponse<BatchIDStringRequest> removeBatch(@RequestBody SimpleRequest<BatchIDStringRequest> req) {
+        if ((null != req.getParams()) && (req.getParams().getIds().size() >0)){
+            System.out.println(req.getParams().getIds());
+            service.removeBatch(req.getParams().getIds());
+        }
+
+        SimpleResponse<BatchIDStringRequest> result = new SimpleResponse<BatchIDStringRequest>();
+        return result.success(req.getParams());
+    }
+
+    @ApiOperation(value="修改系统管理用户信息")
+    @PostMapping(path = "/updateAdminAccount")
+    public SimpleResponse<AccountDto> updateAdminAccount (@RequestBody SimpleRequest<AccountDto> params){
+        AccountDto account = params.getParams();
+        account.setType(AccountType.ADMIN_USER.ordinal());
+        service.updateAccount(account);
+        SimpleResponse<AccountDto> ret= new SimpleResponse<AccountDto>();
+        return  ret.success(account);
+
+    }
+
+    @ApiOperation(value="修改帐户信息")
+    @PostMapping(path = "/updateAccount")
+    public SimpleResponse<AccountDto> updateAccount (@RequestBody SimpleRequest<AccountDto> params){
+        AccountDto account = params.getParams();
+        service.updateAccount(account);
+        SimpleResponse<AccountDto> ret= new SimpleResponse<AccountDto>();
+        return  ret.success(account);
+
+    }
+
+    @ApiOperation(value="修改基本用户扩展信息")
+    @PostMapping(path = "/updateUserInfo")
+    public SimpleResponse<UserDto> updateUserInfo (@RequestBody SimpleRequest<UserDto> params){
+        UserDto userInfo = params.getParams();
+        service.updateUserInfo(userInfo);
+        SimpleResponse<UserDto> ret= new SimpleResponse<UserDto>();
+        return  ret.success(userInfo);
+    }
+
+
+
+    @ApiOperation(value="验证登录")
+    @GetMapping(path = "/currentUser")
+    public SimpleResponse<LoginResponse>  assertLoginStatus(@LoginUser SessionUser user){
+        if (!user.isLoginUser()){
+            throw new ServiceException(ResultCode.UN_AUTHORIZED);
+        }
+        AccountDto account = service.findById(user.getUserId());
+        List<String> roles = service.getAccountRoles(user.getUserId());
+        LoginResponse response = LoginResponse.builder().isLogin(user.isLoginUser())
+                .token(user.getToken()).name(account.getNickName())
+                .photoUrl(account.getPhotoUrl())
+                .roles(roles).build();
+        SimpleResponse<LoginResponse> result = new SimpleResponse<LoginResponse>();
+        return  result.success(response);
+    }
     @ApiOperation(value="微信登录及验证")
     @PostMapping(path = "/wechatLogin")
     public SimpleResponse<LoginResponse>  wechatLogin (@RequestBody SimpleRequest<WechatLoginRequest> request, HttpServletResponse response){
@@ -109,18 +188,20 @@ public class AccountController extends BaseController {
     }
     @ApiOperation(value="普通用户登录")
     @PostMapping(path = "/login")
-    public SimpleResponse<AccountDto>  login (@RequestBody SimpleRequest<AccountDto> request, HttpServletResponse response){
-        AccountDto account = request.getParams();
+    public SimpleResponse<LoginResponse> login (@RequestBody SimpleRequest<LoginRequest> request, HttpServletResponse response){
+        LoginRequest accountLogin = request.getParams();
 
-        String token = service.login(account);
+        String token = service.login(accountLogin);
         if (StringUtils.isBlank(token)){
             throw new ServiceException("登录失败");
         }
-        account.setToken(token);
+
         String domainName = appProps.getDomainName();
-        Sessions.writeToken(token,domainName,true,response);
-        SimpleResponse<AccountDto> ret= new SimpleResponse<AccountDto>();
-        return  ret.success(account);
+        boolean rememberMe = accountLogin.isAutoLogin();
+
+        Sessions.writeToken(token,domainName,rememberMe,response);
+        SimpleResponse<LoginResponse> result = new SimpleResponse<LoginResponse>();
+        return result.success(LoginResponse.builder().token(token).build());
 
     }
     @ApiOperation(value="普通用户登出")
@@ -140,25 +221,8 @@ public class AccountController extends BaseController {
 
     }
 
-    @ApiOperation(value="修改基本用户信息")
-    @PostMapping(path = "/updateAccount")
-    public SimpleResponse<AccountDto> updateAccount (@RequestBody SimpleRequest<AccountDto> params){
-        AccountDto account = params.getParams();
-        service.updateAccount(account);
-        SimpleResponse<AccountDto> ret= new SimpleResponse<AccountDto>();
-        return  ret.success(account);
-
-    }
 
 
-    @ApiOperation(value="修改基本用户扩展信息")
-    @PostMapping(path = "/updateUserInfo")
-    public SimpleResponse<UserDto> updateUserInfo (@RequestBody SimpleRequest<UserDto> params){
-        UserDto userInfo = params.getParams();
-        service.updateUserInfo(userInfo);
-        SimpleResponse<UserDto> ret= new SimpleResponse<UserDto>();
-        return  ret.success(userInfo);
-    }
 
     @ApiOperation(value="获取当前登录用户信息")
     @PostMapping(path = "/getCurrentUserInfo")

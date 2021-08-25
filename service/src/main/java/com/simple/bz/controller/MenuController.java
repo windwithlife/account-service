@@ -1,8 +1,8 @@
 package com.simple.bz.controller;
 
 import com.simple.bz.dto.*;
+import com.simple.bz.service.MenuService;
 import com.simple.bz.service.PermissionService;
-import com.simple.bz.service.RoleService;
 import com.simple.common.api.BaseResponse;
 import com.simple.common.api.GenericResponse;
 import com.simple.common.api.SimpleRequest;
@@ -18,57 +18,57 @@ import java.util.List;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/permission")
+@RequestMapping("/menu")
 @Api(tags = "帐户权限相关的SOA集")
-public class PermissionController extends BaseController {
+public class MenuController extends BaseController {
 
-    private final PermissionService service;
+    private final MenuService service;
     private final AppProps appProps;
 
-    @ApiOperation(value="库里所有帐户权限（用于测试)")
+    @ApiOperation(value="库里所有菜单（用于测试)")
     @PostMapping(path = "/queryAll")
-    public SimpleResponse<PermissionsDto> queryAll (){
+    public SimpleResponse<MenusDto> queryAll (){
 
-        List<PermissionDto> permissions = service.queryAll();
-        SimpleResponse<PermissionsDto> result = new SimpleResponse<PermissionsDto>();
+        List<MenuDto> menus = service.queryAll();
+        SimpleResponse<MenusDto> result = new SimpleResponse<MenusDto>();
 
-        return result.success(PermissionsDto.builder().permissions(permissions).build());
+        return result.success(MenusDto.builder().menus(menus).build());
     }
 
-    @GetMapping(path = "/testAuthorize")
-    public BaseResponse testAuth (@RequestParam("param") String param){
+    @GetMapping(path = "/test")
+    public BaseResponse test (@RequestParam("param") String param){
 
         return GenericResponse.buildSuccess("okok response ==>" + param);
     }
     @ApiOperation(value="根据ID获取权限信息",notes = "")
     @PostMapping(path = "/findById")
-    public SimpleResponse<PermissionDto> findById (@RequestBody SimpleRequest<IDRequest> request){
+    public SimpleResponse<MenuDto> findById (@RequestBody SimpleRequest<IDRequest> request){
         Long id = request.getParams().getId();
-        System.out.println("applicationId:" + id);
-        PermissionDto  dto = service.findById(id);
-        SimpleResponse<PermissionDto> result = new SimpleResponse<PermissionDto>();
+        System.out.println("id:" + id);
+        MenuDto  dto = service.findById(id);
+        SimpleResponse<MenuDto> result = new SimpleResponse<MenuDto>();
         return result.success(dto);
     }
 
 
 
     @ApiOperation(value="新增权限",notes = "")
-    @PostMapping(path = "/addPermission")
-    public SimpleResponse<PermissionDto> addNewPermission (@RequestBody SimpleRequest<PermissionNewDto> request){
-        PermissionNewDto dto = request.getParams();
-        PermissionDto data = service.save(dto);
-        SimpleResponse<PermissionDto> result = new SimpleResponse<PermissionDto>();
+    @PostMapping(path = "/addMenu")
+    public SimpleResponse<MenuDto> addNewMenu (@RequestBody SimpleRequest<MenuNewDto> request){
+        MenuNewDto dto = request.getParams();
+        MenuDto data = service.save(dto);
+        SimpleResponse<MenuDto> result = new SimpleResponse<MenuDto>();
         return result.success(data);
     }
 
 
     @ApiOperation(value="修改权限信息",notes = "")
     @PostMapping(path = "/update")
-    public SimpleResponse<PermissionDto> updateSave(@RequestBody SimpleRequest<PermissionDto> req) {
-        PermissionDto dto = req.getParams();
+    public SimpleResponse<MenuDto> updateSave(@RequestBody SimpleRequest<MenuDto> req) {
+        MenuDto dto = req.getParams();
         System.out.println(dto.toString());
         service.update(dto);
-        SimpleResponse<PermissionDto> result = new SimpleResponse<PermissionDto>();
+        SimpleResponse<MenuDto> result = new SimpleResponse<MenuDto>();
         return result.success(dto);
 
     }
