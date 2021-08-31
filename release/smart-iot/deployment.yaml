@@ -62,6 +62,7 @@ spec:
       http:
         paths:
           - path: /simple-account/(.*)
+            pathType: Prefix
             backend:
               service:
                 name: service-{{.app_name}}
