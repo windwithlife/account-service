@@ -49,10 +49,9 @@ kind: Ingress
 metadata:
   name: ingress-{{.app_name}}
   annotations:
+    kubernetes.io/ingress.class: "traefik"
     traefik.ingress.kubernetes.io/custom-response-headers: "Access-Control-Allow-Origin:*||Access-Control-Allow-Methods:GET,POST,OPTIONS||Access-Control-Allow-Headers:DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,token||Access-Control-Expose-Headers:Content-Length,Content-Range,token"
-    #ingress.kubernetes.io/custom-response-headers: "Access-Control-Allow-Origin:*||Access-Control-Allow-Methods:GET,POST,OPTIONS||Access-Control-Allow-Headers:DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range||Access-Control-Expose-Headers:Content-Length,Content-Range"
     traefik.ingress.kubernetes.io/rewrite-target: /account-service/$1
-    # nginx.ingress.kubernetes.io/rewrite-target: /account-service
 spec:
   tls:
   - secretName: {{.soa_gateway_cert}}
@@ -67,32 +66,6 @@ spec:
             backend:
               serviceName: service-{{.app_name}}
               servicePort: 80
-<<<<<<< HEAD
-         
-
----
-apiVersion: networking.k8s.io/v1beta1
-kind: Ingress
-metadata:
-  name: ingress-simple-account
-  annotations:
-    nginx.ingress.kubernetes.io/enable-cors: "true"
-    nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
-    nginx.ingress.kubernetes.io/cors-allow-headers: "token,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization"
-    nginx.ingress.kubernetes.io/cors-expose-headers: "token"
-    nginx.ingress.kubernetes.io/ssl-redirect: 'false' 
-    nginx.ingress.kubernetes.io/rewrite-target: /account-service/$1
-spec:
-  tls:
-  - secretName: {{.soa_gateway_cert}}
-    hosts:
-    - {{.soa_gateway}}
-  rules:
-    - host: {{.soa_gateway}}
-      http:
-        paths:
-=======
->>>>>>> master
           - path: /simple-account/?(.*)
             pathType: Prefix
             backend:
@@ -109,8 +82,6 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: "traefik"
     traefik.ingress.kubernetes.io/custom-response-headers: "Access-Control-Allow-Origin:*||Access-Control-Allow-Methods:GET,POST,OPTIONS||Access-Control-Allow-Headers:DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,token||Access-Control-Expose-Headers:Content-Length,Content-Range,token"
-    #ingress.kubernetes.io/custom-response-headers: "Access-Control-Allow-Origin:*||Access-Control-Allow-Methods:GET,POST,OPTIONS||Access-Control-Allow-Headers:DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range||Access-Control-Expose-Headers:Content-Length,Content-Range"
-    # cert-manager.io/cluster-issuer: "letsencrypt-staging"
 spec:
   tls:
   - secretName: {{.soa_gateway_cert}}
