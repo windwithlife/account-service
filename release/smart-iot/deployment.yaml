@@ -51,7 +51,7 @@ metadata:
   annotations:
     traefik.ingress.kubernetes.io/custom-response-headers: "Access-Control-Allow-Origin:*||Access-Control-Allow-Methods:GET,POST,OPTIONS||Access-Control-Allow-Headers:DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,token||Access-Control-Expose-Headers:Content-Length,Content-Range,token"
     #ingress.kubernetes.io/custom-response-headers: "Access-Control-Allow-Origin:*||Access-Control-Allow-Methods:GET,POST,OPTIONS||Access-Control-Allow-Headers:DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range||Access-Control-Expose-Headers:Content-Length,Content-Range"
-    traefik.ingress.kubernetes.io/rewrite-target: /account-service
+    traefik.ingress.kubernetes.io/rewrite-target: /account-service/$1
     # nginx.ingress.kubernetes.io/rewrite-target: /account-service
 spec:
   tls:
@@ -67,7 +67,7 @@ spec:
             backend:
               serviceName: service-{{.app_name}}
               servicePort: 80
-          - path: /simple-account
+          - path: /simple-account/?(.*)
             pathType: Prefix
             backend:
               serviceName: service-{{.app_name}}
