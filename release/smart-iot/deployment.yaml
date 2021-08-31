@@ -42,14 +42,17 @@ spec:
   selector:
     app: app-{{.app_name}}
 
+
 ---
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: ingress-{{.app_name}}
   annotations:
-    nginx.ingress.kubernetes.io/enable-cors: "true"
-    nginx.ingress.kubernetes.io/rewrite-target: /account-service
+    traefik.ingress.kubernetes.io/custom-response-headers: "Access-Control-Allow-Origin:*||Access-Control-Allow-Methods:GET,POST,OPTIONS||Access-Control-Allow-Headers:DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,token||Access-Control-Expose-Headers:Content-Length,Content-Range,token"
+    #ingress.kubernetes.io/custom-response-headers: "Access-Control-Allow-Origin:*||Access-Control-Allow-Methods:GET,POST,OPTIONS||Access-Control-Allow-Headers:DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range||Access-Control-Expose-Headers:Content-Length,Content-Range"
+    traefik.ingress.kubernetes.io/rewrite-target: /account-service
+    # nginx.ingress.kubernetes.io/rewrite-target: /account-service
 spec:
   tls:
   - secretName: {{.soa_gateway_cert}}
@@ -71,3 +74,30 @@ spec:
               servicePort: 80
 
 
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-{{.app_name}}
+  annotations:
+    kubernetes.io/ingress.class: "traefik"
+    traefik.ingress.kubernetes.io/custom-response-headers: "Access-Control-Allow-Origin:*||Access-Control-Allow-Methods:GET,POST,OPTIONS||Access-Control-Allow-Headers:DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,token||Access-Control-Expose-Headers:Content-Length,Content-Range,token"
+    #ingress.kubernetes.io/custom-response-headers: "Access-Control-Allow-Origin:*||Access-Control-Allow-Methods:GET,POST,OPTIONS||Access-Control-Allow-Headers:DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range||Access-Control-Expose-Headers:Content-Length,Content-Range"
+    # cert-manager.io/cluster-issuer: "letsencrypt-staging"
+spec:
+  tls:
+  - secretName: {{.soa_gateway_cert}}
+    hosts:
+    - {{.soa_gateway}}
+  rules:
+    - host: {{.soa_gateway}}
+      http:
+        paths:
+          - path: {{.path_name}}
+            pathType: Prefix
+            backend:
+              service:
+                name: service-{{.app_name}}
+                port:
+                  number: 80

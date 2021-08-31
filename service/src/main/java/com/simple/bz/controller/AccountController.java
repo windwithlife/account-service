@@ -169,17 +169,14 @@ public class AccountController extends BaseController {
     @PostMapping(path = "/signup")
     public SimpleResponse<AccountDto>  signup (@RequestBody SimpleRequest<AccountDto> request, HttpServletResponse response){
         AccountDto dto = request.getParams();
+        if (null == dto){
+            throw new ServiceException("参数错误");
+        }
         AccountDto result = this.service.signup(dto);
         if (null == result){
             throw new ServiceException("注册失败");
         }
-//        String token = service.login(dto);
-//        if (StringUtils.isBlank(token)){
-//            throw new ServiceException("注册失败");
-//        }
-//        dto.setToken(token);
-//        String domainName = appProps.getDomainName();
-//        Sessions.writeToken(token,domainName,true,response);
+
 
         System.out.println("sign account dto info ===>" +  result.toString());
         SimpleResponse<AccountDto> ret= new SimpleResponse<AccountDto>();
