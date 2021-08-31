@@ -196,6 +196,7 @@ steps:
       app_name: account-service
       image_name: ccr.ccs.tencentyun.com/windwithlife/account-service
       soa_gateway: api.koudaibook.com
+      soa_gateway_cert: api-default-secret
       path_name: /account-service
       build_tag: build-${DRONE_BUILD_NUMBER}
 volumes:
