@@ -69,8 +69,10 @@ spec:
           - path: /simple-account/?(.*)
             pathType: Prefix
             backend:
-              serviceName: service-{{.app_name}}
-              servicePort: 80
+              service:
+                name: service-{{.app_name}}
+                port:
+                  number: 80
 
 
 
