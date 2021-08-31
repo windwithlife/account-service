@@ -54,7 +54,7 @@ metadata:
     traefik.ingress.kubernetes.io/rewrite-target: /account-service/$1
 spec:
   tls:
-  - secretName: {{.soa_gateway_cert}}
+  - secretName: api-default-secret
     hosts:
     - {{.soa_gateway}}
   rules:
