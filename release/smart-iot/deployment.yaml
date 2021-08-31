@@ -61,8 +61,7 @@ spec:
     - host: {{.soa_gateway}}
       http:
         paths:
-          - path: /simple-account/?(.*)
-            pathType: Prefix
+          - path: /simple-account/(.*)
             backend:
               service:
                 name: service-{{.app_name}}
