@@ -18,4 +18,6 @@ public class LoginRequest {
     private String domain;
     private boolean autoLogin;
     private String type;
+    private String loginType;
+
 }

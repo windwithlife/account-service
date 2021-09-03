@@ -101,7 +101,7 @@ public class AccountService {
     public String login(LoginRequest accountLogin) {
         AccountModel model = null;
         String password = "";
-        String loginType = accountLogin.getType();
+        String loginType = accountLogin.getLoginType();
         if (loginType.equalsIgnoreCase("account")) {
             model = dao.findOneByName(accountLogin.getUsername());
             if (null == model) {

@@ -43,33 +43,6 @@ spec:
     app: app-{{.app_name}}
 
 
----
-
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: ingress-simple-account
-  annotations:
-    kubernetes.io/ingress.class: "traefik"
-    traefik.ingress.kubernetes.io/custom-response-headers: "Access-Control-Allow-Origin:*||Access-Control-Allow-Methods:GET,POST,OPTIONS||Access-Control-Allow-Headers:DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,token||Access-Control-Expose-Headers:Content-Length,Content-Range,token"
-    traefik.ingress.kubernetes.io/rewrite-target: /account-service/$1
-spec:
-  tls:
-  - secretName: api-default-secret
-    hosts:
-    - {{.soa_gateway}}
-  rules:
-    - host: {{.soa_gateway}}
-      http:
-        paths:
-          - path: /simple-account/(.*)
-            pathType: Prefix
-            backend:
-              service:
-                name: service-{{.app_name}}
-                port:
-                  number: 80
-
 
 
 ---
@@ -96,3 +69,69 @@ spec:
                 name: service-{{.app_name}}
                 port:
                   number: 80
+
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: admin-replace-regex
+spec:
+  replacePathRegex:
+    regex: ^/simple-account/(.*)
+    replacement: /account-service/$1
+
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: simple-account
+spec:
+  entryPoints:
+    - websecure
+    - web
+  tls:                              
+    secretName: api-default-secret        
+    options:                          
+      namespace: default            
+    domains:                        
+    - main: koudaibook.com             
+      sans:                         
+      - api.koudaibook.com  
+  routes:   
+    - match: Host(`api.koudaibook.com`) && (PathPrefix(`/simple-account/`))
+      kind: Rule
+      services:
+        - name: service-account-service
+          port: 80
+      middlewares:
+        - name: admin-replace-regex
+
+---
+
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: ingress-simple-account
+#   annotations:
+#     kubernetes.io/ingress.class: "traefik"
+#     traefik.ingress.kubernetes.io/rule-type: Path
+#     traefik.ingress.kubernetes.io/custom-response-headers: "Access-Control-Allow-Origin:*||Access-Control-Allow-Methods:GET,POST,OPTIONS||Access-Control-Allow-Headers:DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,token||Access-Control-Expose-Headers:Content-Length,Content-Range,token"
+#     traefik.ingress.kubernetes.io/rewrite-target: /account-service
+# spec:
+#   tls:
+#   - secretName: api-default-secret
+#     hosts:
+#     - {{.soa_gateway}}
+#   rules:
+#     - host: {{.soa_gateway}}
+#       http:
+#         paths:
+#           - path: /simple-account
+#             pathType: Prefix
+#             backend:
+#               service:
+#                 name: service-{{.app_name}}
+#                 port:
+#                   number: 80
