@@ -19,7 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 @RestController
 @RequestMapping("/menu")
-@Api(tags = "帐户权限相关的SOA集")
+@Api(tags = "菜单SOA集合")
 public class MenuController extends BaseController {
 
     private final MenuService service;

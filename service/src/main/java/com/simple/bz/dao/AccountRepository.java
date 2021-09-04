@@ -17,6 +17,8 @@ public interface AccountRepository extends JpaRepository<AccountModel, String>{
     public AccountModel findOneByOpenId(String openId);
     public List<AccountModel> findByOpenId(String openId);
 
+    public AccountModel findOneByEmail(String email);
+
     public AccountModel findOneByPhoneNumber(String name);
     @Modifying
     @Transactional

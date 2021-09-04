@@ -25,7 +25,7 @@ import java.util.List;
 @AllArgsConstructor
 @RestController
 @RequestMapping("/role")
-@Api(tags = "帐户角色相关的SOA集")
+@Api(tags = "角色管理的SOA集合")
 public class RoleController extends BaseController {
 
     private final RoleService service;

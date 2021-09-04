@@ -14,6 +14,8 @@ import com.simple.common.controller.BaseController;
 import com.simple.common.error.ServiceException;
 import com.simple.common.props.AppProps;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
@@ -26,7 +28,7 @@ import java.util.List;
 @AllArgsConstructor
 @RestController
 @RequestMapping("/account")
-@Api(tags = "帐户相关的SOA集")
+@Api(tags = "帐户的SOA接口集")
 public class AccountController extends BaseController {
 
     private final AccountService service;
@@ -165,10 +167,20 @@ public class AccountController extends BaseController {
         SimpleResponse<LoginResponse> result = new SimpleResponse<LoginResponse>();
         return  result.success(response);
     }
-    @ApiOperation(value="用记注册")
+    @ApiOperation(value="一般用户注册")
+    @ApiImplicitParams({
+
+            @ApiImplicitParam(name="type",value="为用户帐户类型，一般用户缺省为0，微信小程序为1,公众号为2，小程序为4，微博为5",required=true,paramType="form"),
+            @ApiImplicitParam(name="phoneNumber",value="手机号",paramType="form"),
+            @ApiImplicitParam(name="username",value="用户名",paramType="form"),
+            @ApiImplicitParam(name="nickname",value="用户昵称",paramType="form"),
+            @ApiImplicitParam(name="email",value="邮箱号",paramType="form"),
+            @ApiImplicitParam(name="password",value="密码",required=true,paramType="form"),
+
+    })
     @PostMapping(path = "/signup")
-    public SimpleResponse<AccountDto>  signup (@RequestBody SimpleRequest<AccountDto> request, HttpServletResponse response){
-        AccountDto dto = request.getParams();
+    public SimpleResponse<AccountDto>  signup (@RequestBody SimpleRequest<SignupDto> request, HttpServletResponse response){
+        SignupDto dto = request.getParams();
         if (null == dto){
             throw new ServiceException("参数错误");
         }
@@ -184,6 +196,16 @@ public class AccountController extends BaseController {
 
     }
     @ApiOperation(value="普通用户登录")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="loginType",value="用户登录值为name,手机登录值为mobile,邮箱登录为email,微信登录为wechat,微博登录为weibo",required=true,paramType="form"),
+            @ApiImplicitParam(name="type",value="为用户帐户类型，一般用户缺省为0，微信小程序为1,公众号为2，小程序为4，微博为5",required=true,paramType="form"),
+            @ApiImplicitParam(name="mobile",value="手机号",paramType="form"),
+            @ApiImplicitParam(name="username",value="用户名",paramType="form"),
+            @ApiImplicitParam(name="email",value="邮箱号",paramType="form"),
+            @ApiImplicitParam(name="password",value="密码",required=true,paramType="form"),
+            @ApiImplicitParam(name="autoLogin",value="是否为自动登录",paramType="form",dataType="boolean")
+    })
+
     @PostMapping(path = "/login")
     public SimpleResponse<LoginResponse> login (@RequestBody SimpleRequest<LoginRequest> request, HttpServletResponse response){
         LoginRequest accountLogin = request.getParams();

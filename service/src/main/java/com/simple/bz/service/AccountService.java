@@ -6,6 +6,7 @@ import com.simple.bz.dao.ContextQuery;
 import com.simple.bz.dao.UserRepository;
 import com.simple.bz.dto.AccountDto;
 import com.simple.bz.dto.LoginRequest;
+import com.simple.bz.dto.SignupDto;
 import com.simple.bz.dto.UserDto;
 import com.simple.bz.model.*;
 import com.simple.common.auth.Sessions;
@@ -83,12 +84,14 @@ public class AccountService {
     }
 
     @Transactional
-    public AccountDto signup(AccountDto account) {
-        AccountModel model = dao.findOneByName(account.getName());
+    public AccountDto signup(SignupDto account) {
+        AccountModel model = dao.findOneByName(account.getUsername());
         if (null != model) {
             throw new ServiceException("该用户已存在");
         } else {
-            model = this.convertToModel(account);
+            model = this.modelMapper.map(account,AccountModel.class);
+            model.setName(account.getUsername());
+            model.setCreatedTime(DateUtil.getDateToday());
             model.setType(AccountType.NORMAL.ordinal());
             AccountModel newAccount = this.dao.save(model);
             this.accountRoleDao.save(AccountRoleModel.builder().accountId(newAccount.getId()).roleId(RoleModel.DEFAULT_ROLE_ID).build());
@@ -99,36 +102,49 @@ public class AccountService {
 
     @Transactional
     public String login(LoginRequest accountLogin) {
-        AccountModel model = null;
-        String password = "";
-        String loginType = accountLogin.getLoginType();
-        if (loginType.equalsIgnoreCase("account")) {
-            model = dao.findOneByName(accountLogin.getUsername());
-            if (null == model) {
-                throw new ServiceException("该用户不存在");
+
+            AccountModel model = null;
+            String password = "";
+            String loginType = accountLogin.getLoginType();
+            if (StringUtils.isBlank(loginType)){
+                throw new ServiceException("接口参数错误，请提供loginType参数");
             }
-            password = model.getPassword();
+            if (loginType.equalsIgnoreCase("account")) {
+                model = dao.findOneByName(accountLogin.getUsername());
+                if (null == model) {
+                    throw new ServiceException("该用户不存在");
+                }
+                password = model.getPassword();
 
-        }
-        if (loginType.equalsIgnoreCase("mobile")) {
-            model = dao.findOneByPhoneNumber(accountLogin.getMobile());
-            if (null == model) {
-                throw new ServiceException("该用户不存在");
             }
-            password = model.getPassword();
-        }
+            if (loginType.equalsIgnoreCase("email")) {
+                model = dao.findOneByEmail(accountLogin.getEmail());
+                if (null == model) {
+                    throw new ServiceException("该用户不存在");
+                }
+                password = model.getPassword();
 
-        if (StringUtils.isBlank(password)) {
-            throw new ServiceException("密码异常");
-        }
-        if (!password.equals(accountLogin.getPassword())) {
-            throw new ServiceException("密码不正确");
-        }
+            }
+            if (loginType.equalsIgnoreCase("mobile")) {
+                model = dao.findOneByPhoneNumber(accountLogin.getMobile());
+                if (null == model) {
+                    throw new ServiceException("该用户不存在");
+                }
+                password = model.getPassword();
+            }
 
-        String rolesString = this.getAccountRolesString(model.getId());
-        String token = Sessions.createTokenWithUserInfo(model.getId(), rolesString, "", "");
-        return token;
+            if (StringUtils.isBlank(password)) {
+                throw new ServiceException("密码异常");
+            }
+            if (!password.equals(accountLogin.getPassword())) {
+                throw new ServiceException("密码不正确");
+            }
 
+            model.setLoginTime(DateUtil.getDateToday());
+            dao.save(model);
+            String rolesString = this.getAccountRolesString(model.getId());
+            String token = Sessions.createTokenWithUserInfo(model.getId(), rolesString, "", "");
+            return token;
 
     }
 

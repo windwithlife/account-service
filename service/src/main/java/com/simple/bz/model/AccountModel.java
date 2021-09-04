@@ -11,6 +11,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.*;
+import java.util.Date;
 
 @Data
 @NoArgsConstructor
@@ -43,4 +44,6 @@ public class AccountModel {
     private boolean confirmedAndActive;
     private String phoneNumber;
     private String photoUrl;
+    private Date loginTime;
+    private Date createdTime;
 }
