@@ -14,7 +14,7 @@ steps:
   - name: 构建镜像&PUSH镜像到Hub（PROD）.
     image: plugins/docker
     settings:
-      dockerfile: ./release/prod/Dockerfile
+      dockerfile: ./Dockerfile
       use_cache: true
       repo: registry.cn-hangzhou.aliyuncs.com/windwithlife/account-service
       registry: https://registry.cn-hangzhou.aliyuncs.com
@@ -29,7 +29,7 @@ steps:
   - name: 部署到集群-dron8s方式(PROD)
     image: bh90210/dron8s:latest
     settings:
-      yaml: ./release/prod/deployment.yaml
+      yaml: ./release/deployment.yaml
       kubeconfig:
         from_secret: kubeconfig
       app_name: account-service
@@ -66,7 +66,7 @@ steps:
   - name: 构建镜像&PUSH镜像到Hub(UAT).
     image: plugins/docker
     settings:
-      dockerfile: ./release/prod/Dockerfile
+      dockerfile: ./Dockerfile
       use_cache: true
       repo: ccr.ccs.tencentyun.com/windwithlife/account-service
       registry: https://ccr.ccs.tencentyun.com/
@@ -81,7 +81,7 @@ steps:
   - name: 部署到集群-(UAT)
     image: bh90210/dron8s:latest
     settings:
-      yaml: ./release/prod/deployment.yaml
+      yaml: ./release/deployment.yaml
       kubeconfig:
         from_secret: kubeconfig
       app_name: account-service
@@ -121,7 +121,7 @@ steps:
   - name: 构建镜像&PUSH镜像到Hub（PROD）.
     image: plugins/docker
     settings:
-      dockerfile: ./release/smart-iot/Dockerfile
+      dockerfile: ./Dockerfile
       use_cache: true
       repo: registry.cn-hangzhou.aliyuncs.com/windwithlife/account-service
       registry: https://registry.cn-hangzhou.aliyuncs.com
