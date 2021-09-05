@@ -14,7 +14,7 @@ steps:
   - name: 构建镜像&PUSH镜像到Hub（PROD）.
     image: plugins/docker
     settings:
-      dockerfile: ./Dockerfile
+      dockerfile: ./release/Dockerfile
       use_cache: true
       repo: registry.cn-hangzhou.aliyuncs.com/windwithlife/account-service
       registry: https://registry.cn-hangzhou.aliyuncs.com
@@ -66,7 +66,7 @@ steps:
   - name: 构建镜像&PUSH镜像到Hub(UAT).
     image: plugins/docker
     settings:
-      dockerfile: ./Dockerfile
+      dockerfile: ./release/Dockerfile
       use_cache: true
       repo: ccr.ccs.tencentyun.com/windwithlife/account-service
       registry: https://ccr.ccs.tencentyun.com/
@@ -121,7 +121,7 @@ steps:
   - name: 构建镜像&PUSH镜像到Hub（PROD）.
     image: plugins/docker
     settings:
-      dockerfile: ./Dockerfile
+      dockerfile: ./release/Dockerfile
       use_cache: true
       repo: registry.cn-hangzhou.aliyuncs.com/windwithlife/account-service
       registry: https://registry.cn-hangzhou.aliyuncs.com
