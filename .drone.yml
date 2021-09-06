@@ -33,7 +33,8 @@ steps:
       kubeconfig:
         from_secret: kubeconfig-prod
       app_name: account-service
-      image_name: registry.cn-hangzhou.aliyuncs.com/windwithlife/account-service
+      path_name: /account-service
+      image_name: ccr.ccs.tencentyun.com/windwithlife/account-service
       soa_gateway: api.zhangyongqiao.com
       soa_gateway_cert: api-default-secret
       build_tag: build-${DRONE_BUILD_NUMBER}
@@ -85,6 +86,7 @@ steps:
       kubeconfig:
         from_secret: kubeconfig-uat
       app_name: account-service
+      path_name: /account-service
       image_name: ccr.ccs.tencentyun.com/windwithlife/account-service
       soa_gateway: api.xkoudai.com
       soa_gateway_cert: api-default-secret
@@ -100,60 +102,6 @@ trigger:
     - uat
   event:
     - push
-
----
-kind: pipeline
-type: docker
-name: account-service
-
-
-steps:
-  - name: 编译打包代码
-    image: maven:3-jdk-10
-    volumes:
-      - name : mvncache
-        path : /root/.m2
-    commands:
-      - echo 'start to compile and package'
-      - cd  ./service
-      - mvn clean package -DskipTests=true -Dmaven.javadoc.skip=true -B
-
-  - name: 构建镜像&PUSH镜像到Hub（PROD）.
-    image: plugins/docker
-    settings:
-      dockerfile: ./release/Dockerfile
-      use_cache: true
-      repo: registry.cn-hangzhou.aliyuncs.com/windwithlife/account-service
-      registry: https://registry.cn-hangzhou.aliyuncs.com
-      mirror: https://89cgb0wn.mirror.aliyuncs.com
-      username: 379163259@qq.com
-      password: password7&
-      # 更多变量参考https://docs.drone.io/pipeline/environment/reference/
-      tags:
-        - ${DRONE_TAG=latest}
-        - build-${DRONE_BUILD_NUMBER}      
-
-  - name: 部署到集群-dron8s方式(PROD)
-    image: bh90210/dron8s:latest
-    settings:
-      yaml: ./release/smart-iot/deployment.yaml
-      kubeconfig:
-        from_secret: kubeconfig-iot
-      app_name: account-service
-      image_name: registry.cn-hangzhou.aliyuncs.com/windwithlife/account-service
-      soa_gateway: api.koudaibook.com
-      path_name: /account-service
-      build_tag: build-${DRONE_BUILD_NUMBER}
-volumes:
-  - name: mvncache
-    host:
-      path: /var/lib/cache/.m2
-
-trigger:
-  branch:
-    - smart
-  event:
-    - push    
 
 ---
 kind: pipeline
