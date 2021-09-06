@@ -55,7 +55,7 @@ metadata:
     
     # cert-manager.io/cluster-issuer: "letsencrypt-staging"
 spec:
-  tls:s
+  tls:
   - secretName: {{.soa_gateway_cert}}
     hosts:
     - {{.soa_gateway}}
