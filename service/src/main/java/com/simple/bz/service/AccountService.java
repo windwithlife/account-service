@@ -104,37 +104,41 @@ public class AccountService {
     public String login(LoginRequest accountLogin) {
 
             AccountModel model = null;
+            boolean paramsIsOK = false;
             String password = "";
             String loginType = accountLogin.getLoginType();
             if (StringUtils.isBlank(loginType)){
                 throw new ServiceException("接口参数错误，请提供loginType参数");
             }
-            if (loginType.equalsIgnoreCase("account")) {
+            if (loginType.equalsIgnoreCase("account") && StringUtils.isNotBlank(accountLogin.getUsername())) {
                 model = dao.findOneByName(accountLogin.getUsername());
                 if (null == model) {
                     throw new ServiceException("该用户不存在");
                 }
+                paramsIsOK = true;
                 password = model.getPassword();
 
             }
-            if (loginType.equalsIgnoreCase("email")) {
+            if (loginType.equalsIgnoreCase("email") && StringUtils.isNotBlank(accountLogin.getEmail())) {
                 model = dao.findOneByEmail(accountLogin.getEmail());
                 if (null == model) {
                     throw new ServiceException("该用户不存在");
                 }
+                paramsIsOK = true;
                 password = model.getPassword();
 
             }
-            if (loginType.equalsIgnoreCase("mobile")) {
+            if (loginType.equalsIgnoreCase("mobile") && StringUtils.isNotBlank(accountLogin.getMobile())) {
                 model = dao.findOneByPhoneNumber(accountLogin.getMobile());
                 if (null == model) {
                     throw new ServiceException("该用户不存在");
                 }
+                paramsIsOK = true;
                 password = model.getPassword();
             }
 
-            if (StringUtils.isBlank(password)) {
-                throw new ServiceException("密码异常");
+            if (!paramsIsOK || StringUtils.isBlank(password)) {
+                throw new ServiceException("参数或密码异常");
             }
             if (!password.equals(accountLogin.getPassword())) {
                 throw new ServiceException("密码不正确");
